@@ -1,4 +1,5 @@
 import java.io.File
+import java.net.URI
 
 plugins {
     id("com.android.application")
@@ -105,7 +106,7 @@ val fetchSherpaOnnx by tasks.registering {
         for (u in urls) {
             try {
                 println("[IranAmap] دریافت sherpa-onnx از $u")
-                java.net.URI(u).toURL().openStream().use { input ->
+                URI(u).toURL().openStream().use { input ->
                     sherpaAar.outputStream().use { out -> input.copyTo(out) }
                 }
                 if (sherpaAar.length() > 1_000_000) {
