@@ -39,11 +39,41 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: نصب Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: کش Gradle
         uses: gradle/actions/setup-gradle@v3
+
+      # نصب مستقیم بسته‌های لازم. (به‌جای android-actions/setup-android که با
+      # cmdline-tools جدید روی بسته‌ی حذف‌شده‌ی «tools» شکست می‌خورد.)
+      - name: آماده‌سازی Android SDK
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          echo "SDK=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+
+          SDKM="$(ls -d "$SDK"/cmdline-tools/*/bin/sdkmanager 2>/dev/null | head -1 || true)"
+          if [ -z "$SDKM" ] && [ -x "$SDK/tools/bin/sdkmanager" ]; then SDKM="$SDK/tools/bin/sdkmanager"; fi
+          if [ -z "$SDKM" ] && command -v sdkmanager >/dev/null 2>&1; then SDKM="$(command -v sdkmanager)"; fi
+          if [ -z "$SDKM" ]; then
+            echo "sdkmanager پیدا نشد؛ نصب cmdline-tools ..."
+            mkdir -p "$SDK/cmdline-tools"
+            curl -sSL -o /tmp/cmdline.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            unzip -q /tmp/cmdline.zip -d /tmp/cmdline
+            mv /tmp/cmdline/cmdline-tools "$SDK/cmdline-tools/latest"
+            SDKM="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          echo "sdkmanager: $SDKM"
+          echo "SDKMANAGER=$SDKM" >> "$GITHUB_ENV"
+
+          set +e
+          yes | "$SDKM" --sdk_root="$SDK" --licenses > /dev/null 2>&1
+          set -e
+
+          # فقط بسته‌هایی را نصب می‌کنیم که واقعاً لازم‌اند
+          "$SDKM" --sdk_root="$SDK" "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          echo "--- محتوای SDK:"
+          ls "$SDK/platforms" "$SDK/build-tools" || true
 
       - name: آماده‌سازی موتور صدا (sherpa-onnx)
         run: |
@@ -91,3 +121,4 @@ jobs:
           name: test-reports
           path: app/build/reports/tests/testDebugUnitTest
           retention-days: 7
+          if-no-files-found: ignore
