@@ -69,7 +69,7 @@ class OfflineRepository(private val context: Context) {
                     cont.resume(offlineRegions?.toList().orEmpty())
                 }
 
-                override fun onError(error: String?) {
+                override fun onError(error: String) {
                     Log.w(tag, "فهرست بسته‌ها ناموفق: $error")
                     cont.resume(emptyList())
                 }
@@ -180,7 +180,7 @@ class OfflineRepository(private val context: Context) {
                     region.setDownloadState(OfflineRegion.STATE_ACTIVE)
                 }
 
-                override fun onError(error: String?) {
+                override fun onError(error: String) {
                     if (cont.isActive) cont.resume(Result.failure(IllegalStateException(error)))
                 }
             }
@@ -194,7 +194,7 @@ class OfflineRepository(private val context: Context) {
                     cont.resume(offlineRegions?.toList().orEmpty())
                 }
 
-                override fun onError(error: String?) {
+                override fun onError(error: String) {
                     cont.resume(emptyList())
                 }
             })
@@ -208,7 +208,7 @@ class OfflineRepository(private val context: Context) {
                         if (cont.isActive) cont.resume(true)
                     }
 
-                    override fun onError(error: String?) {
+                    override fun onError(error: String) {
                         Log.w(tag, "حذف بسته ناموفق: $error")
                         if (cont.isActive) cont.resume(false)
                     }
@@ -251,7 +251,7 @@ class OfflineRepository(private val context: Context) {
                     }
                 }
 
-                override fun onError(error: String?) {
+                override fun onError(error: String) {
                     cont.resume(0L)
                 }
             })
