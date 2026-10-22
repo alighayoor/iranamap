@@ -1,0 +1,27 @@
+# جایگزین: ساخت APK با Codemagic (۵۰۰ دقیقه‌ی رایگان در ماه)
+# codemagic.io → Add project → اتصال به مخزن گیت‌هاب → این فایل خودکار شناسایی می‌شود
+workflows:
+  android-debug:
+    name: ساخت APK (debug)
+    instance_type: linux_x2
+    max_build_duration: 60
+    environment:
+      java: 17
+      vars:
+        APP_ID: "com.iranamap.real"
+    triggering:
+      events: []
+    scripts:
+      - name: آماده‌سازی ابزارها
+        script: |
+          chmod +x gradlew scripts/*.sh
+          bash scripts/fetch_models.sh
+      - name: اعتبارسنجی
+        script: |
+          python3 tools/validate_project.py
+      - name: ساخت
+        script: |
+          ./gradlew --no-daemon -Dorg.gradle.jvmargs=-Xmx3072m assembleDebug -PappId=$APP_ID
+    artifacts:
+      - app/build/outputs/apk/**/*.apk
+      - app/build/reports/tests/**/*

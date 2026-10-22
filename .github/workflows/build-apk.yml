@@ -1,0 +1,93 @@
+# ساخت خودکار APK در فضای ابری گیت‌هاب (بدون نیاز به هیچ ابزاری روی رایانه‌ی شما)
+#
+# طرز استفاده:
+#   ۱) این پوشه (.github) را همراه پروژه در مخزن گیت‌هاب بگذارید
+#   ۲) تب Actions → workflow «ساخت APK» → دکمه‌ی Run workflow
+#   ۳) پس از ۵ تا ۱۰ دقیقه، APK را از بخش Artifacts دانلود کنید
+name: ساخت APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_id:
+        description: "نام بسته (applicationId) — خالی بگذارید تا مقدار پیش‌فرض پروژه استفاده شود"
+        required: false
+        default: "com.iranamap.real"
+      build_type:
+        description: "نوع ساخت"
+        required: true
+        default: "debug"
+        type: choice
+        options: [debug, release]
+  push:
+    branches: [main]
+    paths-ignore: ["docs/**", "**/*.md"]
+
+jobs:
+  build:
+    name: ساخت ${{ github.event.inputs.build_type || 'debug' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: دریافت کد
+        uses: actions/checkout@v4
+
+      - name: نصب JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: نصب Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: کش Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: آماده‌سازی موتور صدا (sherpa-onnx)
+        run: |
+          chmod +x gradlew scripts/*.sh
+          bash scripts/fetch_models.sh
+          ls -lh app/libs/sherpa-onnx.aar
+
+      - name: اعتبارسنجی ایستا
+        run: python3 tools/validate_project.py
+
+      - name: آزمون‌های واحد
+        run: ./gradlew --no-daemon testDebugUnitTest
+
+      - name: ساخت APK
+        env:
+          APP_ID: ${{ github.event.inputs.app_id }}
+          BUILD_TYPE: ${{ github.event.inputs.build_type || 'debug' }}
+        run: |
+          set -euo pipefail
+          ARGS="--no-daemon -Dorg.gradle.jvmargs=-Xmx3072m"
+          if [ -n "${APP_ID:-}" ]; then ARGS="$ARGS -PappId=$APP_ID"; fi
+          if [ "$BUILD_TYPE" = "release" ]; then
+            ./gradlew $ARGS assembleRelease
+          else
+            ./gradlew $ARGS assembleDebug
+          fi
+
+      - name: نام‌گذاری خروجی
+        run: |
+          mkdir -p artifacts
+          find app/build/outputs/apk -name "*.apk" -exec cp {} artifacts/ \;
+          ls -lh artifacts
+
+      - name: بارگذاری APK به‌عنوان Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: IranAmap-APK
+          path: artifacts/*.apk
+          retention-days: 30
+
+      - name: بارگذاری گزارش آزمون‌ها (در صورت شکست)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: app/build/reports/tests/testDebugUnitTest
+          retention-days: 7

@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_dark">
+
+    <org.maplibre.android.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- نوار جست‌وجو -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/searchCard"
+        style="@style/Widget.IranAmap.Card"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/search_bar_height"
+        android:layout_gravity="top"
+        android:layout_marginStart="@dimen/space_m"
+        android:layout_marginTop="@dimen/space_m"
+        android:layout_marginEnd="@dimen/space_m"
+        app:cardCornerRadius="@dimen/pill_radius"
+        app:cardElevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/space_m"
+            android:paddingEnd="@dimen/space_s">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:contentDescription="@string/search"
+                android:src="@drawable/ic_search"
+                app:tint="@color/text_secondary_dark" />
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/space_s"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="@string/search_hint"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="@color/text_primary_dark"
+                android:textColorHint="@color/text_secondary_dark"
+                android:textSize="15sp" />
+
+            <ImageButton
+                android:id="@+id/btnVoice"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/voice_settings"
+                android:padding="@dimen/space_s"
+                android:src="@drawable/ic_volume"
+                app:tint="@color/brand_accent" />
+
+            <ImageButton
+                android:id="@+id/btnSearchSubmit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/search"
+                android:padding="@dimen/space_s"
+                android:src="@drawable/ic_chevron"
+                app:tint="@color/text_primary_dark" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- ستون دکمه‌های شناور -->
+    <LinearLayout
+        android:id="@+id/fabColumn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="@dimen/space_m"
+        android:orientation="vertical">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnMyLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/space_s"
+            android:contentDescription="@string/my_location"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_my_location"
+            app:tint="@color/brand_accent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn3D"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/space_s"
+            android:contentDescription="@string/map_3d"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_3d"
+            app:tint="@color/brand_accent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnLayers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/space_s"
+            android:contentDescription="@string/map_style"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_layers"
+            app:tint="@color/text_primary_dark" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnTraffic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/traffic_lights"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_traffic_light"
+            app:tint="@color/text_primary_dark" />
+    </LinearLayout>
+
+    <!-- کارت سرعت و محدودیت -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/speedCard"
+        style="@style/Widget.IranAmap.Card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:layout_marginStart="@dimen/space_m"
+        android:layout_marginBottom="200dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/space_m">
+
+            <TextView
+                android:id="@+id/tvSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/vazirmatn_bold"
+                android:text="۰"
+                android:textColor="@color/text_primary_dark"
+                android:textSize="26sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/speed"
+                android:textColor="@color/text_secondary_dark"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/tvLimit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_xs"
+                android:background="@drawable/bg_limit"
+                android:paddingStart="@dimen/space_s"
+                android:paddingTop="2dp"
+                android:paddingEnd="@dimen/space_s"
+                android:paddingBottom="2dp"
+                android:text="—"
+                android:textColor="@color/text_primary_dark"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- کارت چراغ راهنمایی -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/lightCard"
+        style="@style/Widget.IranAmap.Card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="@dimen/space_m"
+        android:layout_marginBottom="200dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/space_m">
+
+            <View
+                android:id="@+id/vRed"
+                android:layout_width="@dimen/light_dot"
+                android:layout_height="@dimen/light_dot"
+                android:background="@drawable/dot_red" />
+
+            <View
+                android:id="@+id/vYellow"
+                android:layout_width="@dimen/light_dot"
+                android:layout_height="@dimen/light_dot"
+                android:layout_marginStart="@dimen/space_xs"
+                android:background="@drawable/dot_yellow" />
+
+            <View
+                android:id="@+id/vGreen"
+                android:layout_width="@dimen/light_dot"
+                android:layout_height="@dimen/light_dot"
+                android:layout_marginStart="@dimen/space_xs"
+                android:background="@drawable/dot_green" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_m"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvLightState"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/vazirmatn_medium"
+                    android:text="@string/traffic_light"
+                    android:textColor="@color/text_primary_dark"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvLightCountdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_secondary_dark"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvLightDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_s"
+                android:textColor="@color/text_secondary_dark"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- پنل مسیر و ناوبری -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/navPanel"
+        style="@style/Widget.IranAmap.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="@dimen/space_s"
+        android:layout_marginEnd="@dimen/space_s"
+        android:layout_marginBottom="76dp"
+        android:visibility="gone"
+        app:cardCornerRadius="@dimen/card_radius">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/space_m">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvManeuverIcon"
+                    android:layout_width="@dimen/maneuver_icon_size"
+                    android:layout_height="@dimen/maneuver_icon_size"
+                    android:background="@drawable/bg_maneuver"
+                    android:gravity="center"
+                    android:text="↑"
+                    android:textColor="@color/brand_accent"
+                    android:textSize="26sp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_m"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvManeuverDistance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/vazirmatn_bold"
+                        android:textColor="@color/text_primary_dark"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/tvManeuverText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_primary_dark"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvStreetName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@color/text_secondary_dark"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btnShare"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/share_location"
+                    android:padding="@dimen/space_s"
+                    android:src="@drawable/ic_share"
+                    app:tint="@color/text_secondary_dark" />
+
+                <ImageButton
+                    android:id="@+id/btnCloseRoute"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/clear_route"
+                    android:padding="@dimen/space_s"
+                    android:src="@drawable/ic_close"
+                    app:tint="@color/text_secondary_dark" />
+            </LinearLayout>
+
+            <com.iranamap.real.ui.LaneGuidanceView
+                android:id="@+id/laneGuidance"
+                android:layout_width="match_parent"
+                android:layout_height="26dp"
+                android:layout_marginTop="@dimen/space_s" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_s"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvEta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/text_secondary_dark"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvRemainingDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/space_m"
+                    android:textColor="@color/text_primary_dark"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvRemainingTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary_dark"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_s"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStartNav"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:text="@string/start_navigation"
+                    android:visibility="gone"
+                    app:backgroundTint="@color/brand_primary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStopNav"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:text="@string/stop_navigation"
+                    android:visibility="gone"
+                    app:backgroundTint="@color/danger" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAlternatives"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="@dimen/space_s"
+                    android:layout_weight="1"
+                    android:text="@string/alternative_routes"
+                    android:textColor="@color/brand_accent" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- نوار پایین -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/surface_dark_card"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/menu_bottom" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

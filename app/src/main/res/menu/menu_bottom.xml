@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tabMap"
+        android:icon="@drawable/ic_route"
+        android:title="@string/tab_map" />
+    <item
+        android:id="@+id/tabSearch"
+        android:icon="@drawable/ic_search"
+        android:title="@string/tab_search" />
+    <item
+        android:id="@+id/tabSaved"
+        android:icon="@drawable/ic_star"
+        android:title="@string/tab_saved" />
+    <item
+        android:id="@+id/tabSettings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/tab_settings" />
+</menu>

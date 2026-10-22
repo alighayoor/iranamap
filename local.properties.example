@@ -1,0 +1,4 @@
+# این فایل را به local.properties تغییر نام دهید و مسیر SDK خود را وارد کنید
+# ویندوز:  sdk.dir=C:/Users/<نام>/AppData/Local/Android/Sdk
+# لینوکس:  sdk.dir=/home/<نام>/Android/Sdk
+# مک:      sdk.dir=/Users/<نام>/Library/Android/sdk

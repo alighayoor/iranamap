@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- هویت بصری: سبز ایرانی + فیروزه‌ای -->
+    <color name="brand_primary">#0B6E4F</color>
+    <color name="brand_primary_dark">#0A5C43</color>
+    <color name="brand_accent">#00D5F2</color>
+    <color name="brand_accent_glow">#00E5FF</color>
+
+    <!-- سطح‌های تاریک (حالت شب، پیش‌فرض) -->
+    <color name="surface_dark">#0E1420</color>
+    <color name="surface_dark_card">#18202E</color>
+    <color name="surface_dark_elevated">#222C3D</color>
+    <color name="divider_dark">#2A3547</color>
+    <color name="text_primary_dark">#F2F5FA</color>
+    <color name="text_secondary_dark">#A3B0C2</color>
+
+    <!-- سطح‌های روشن -->
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_light_card">#F4F6FA</color>
+    <color name="text_primary_light">#12161F</color>
+    <color name="text_secondary_light">#5C6779</color>
+
+    <!-- چراغ راهنمایی -->
+    <color name="light_red">#FF3B30</color>
+    <color name="light_yellow">#FFC300</color>
+    <color name="light_green">#2ECC71</color>
+
+    <!-- وضعیت‌ها -->
+    <color name="warning">#FF9F0A</color>
+    <color name="danger">#FF453A</color>
+    <color name="success">#30D158</color>
+    <color name="route_primary">#00D5F2</color>
+    <color name="route_alt">#8E9BB0</color>
+    <color name="black_60">#99000000</color>
+    <color name="white_12">#1FFFFFFF</color>
+    <color name="white_24">#3DFFFFFF</color>
+</resources>

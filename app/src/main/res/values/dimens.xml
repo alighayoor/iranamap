@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_s">8dp</dimen>
+    <dimen name="space_m">12dp</dimen>
+    <dimen name="space_l">16dp</dimen>
+    <dimen name="space_xl">24dp</dimen>
+    <dimen name="card_radius">20dp</dimen>
+    <dimen name="pill_radius">28dp</dimen>
+    <dimen name="nav_panel_height">168dp</dimen>
+    <dimen name="maneuver_icon_size">56dp</dimen>
+    <dimen name="light_dot">16dp</dimen>
+    <dimen name="bottom_bar_height">64dp</dimen>
+    <dimen name="search_bar_height">52dp</dimen>
+</resources>

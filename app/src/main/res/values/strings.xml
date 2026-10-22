@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">نقشه ایران</string>
+    <string name="app_tagline">مسیریابی سه‌بعدی و دستیار صوتی فارسی</string>
+
+    <!-- تب‌های نوار پایین -->
+    <string name="tab_map">نقشه</string>
+    <string name="tab_search">جست‌وجو</string>
+    <string name="tab_saved">ذخیره‌ها</string>
+    <string name="tab_settings">تنظیمات</string>
+
+    <!-- عمومی -->
+    <string name="ok">تأیید</string>
+    <string name="cancel">انصراف</string>
+    <string name="close">بستن</string>
+    <string name="delete">حذف</string>
+    <string name="save">ذخیره</string>
+    <string name="loading">در حال بارگذاری…</string>
+    <string name="retry">تلاش دوباره</string>
+    <string name="search">جست‌وجو</string>
+    <string name="search_hint">مقصد، خیابان یا مکان را بنویسید…</string>
+    <string name="search_city">جست‌وجوی شهر</string>
+    <string name="warning">هشدار</string>
+    <string name="version">نسخه %1$s</string>
+    <string name="about_text">نقشه ایران — مسیریابی سه‌بعدی، چراغ‌های راهنمایی هوشمند و دستیار صوتی فارسی کاملاً آفلاین.\nداده‌های نقشه از OpenStreetMap و کاشی‌ها از OpenFreeMap است.</string>
+    <string name="permission_denied">اجازه‌ی دسترسی داده نشد</string>
+    <string name="no_gps">موقعیت شما پیدا نشد؛ کمی صبر کنید یا GPS را روشن کنید</string>
+
+    <!-- نقشه -->
+    <string name="my_location">موقعیت من</string>
+    <string name="map_style">ظاهر نقشه</string>
+    <string name="style_liberty">روشن</string>
+    <string name="style_dark">شب</string>
+    <string name="style_fiord">ساده</string>
+    <string name="day_mode">روشن</string>
+    <string name="night_mode">شب</string>
+    <string name="map_3d">نمای سه‌بعدی</string>
+    <string name="map_2d">نمای دوبعدی</string>
+    <string name="speed">سرعت</string>
+    <string name="zoom_in">بزرگ‌نمایی</string>
+    <string name="zoom_out">کوچک‌نمایی</string>
+    <string name="compass">قطب‌نما</string>
+    <string name="traffic_lights">چراغ‌های راهنمایی</string>
+    <string name="show_traffic_lights_on_map">نمایش چراغ‌ها روی نقشه</string>
+    <string name="destination_set">مقصد تعیین شد</string>
+
+    <!-- جست‌وجو و دسته‌بندی -->
+    <string name="categories">دسته‌بندی‌ها</string>
+    <string name="nearby">نزدیک من</string>
+    <string name="category_fuel">پمپ بنزین</string>
+    <string name="category_parking">پارکینگ</string>
+    <string name="category_charging">شارژ خودروی برقی</string>
+    <string name="category_hospital">بیمارستان</string>
+    <string name="category_pharmacy">داروخانه</string>
+    <string name="category_restaurant">رستوران</string>
+    <string name="category_cafe">کافه</string>
+    <string name="category_hotel">هتل</string>
+    <string name="category_attraction">جاذبه‌ی گردشگری</string>
+    <string name="category_bank">بانک</string>
+    <string name="category_atm">خودپرداز</string>
+    <string name="category_supermarket">سوپرمارکت</string>
+    <string name="category_mosque">مسجد</string>
+    <string name="category_metro">ایستگاه مترو</string>
+    <string name="category_bus">ایستگاه اتوبوس</string>
+    <string name="category_airport">فرودگاه</string>
+    <string name="category_police">کلانتری</string>
+    <string name="category_park">پارک</string>
+    <string name="category_repair">تعمیرگاه خودرو</string>
+    <string name="category_toilet">سرویس بهداشتی</string>
+    <string name="category_results">%1$s مورد در نزدیکی شما</string>
+    <string name="category_empty">در این محدوده چیزی پیدا نشد</string>
+    <string name="m_away">%1$s</string>
+    <string name="open_in_map">نمایش روی نقشه</string>
+    <string name="navigate_to">مسیریابی به اینجا</string>
+    <string name="share_location">اشتراک‌گذاری مکان</string>
+    <string name="share_text">موقعیت: %1$s\nhttps://www.openstreetmap.org/?mlat=%2$s&amp;mlon=%3$s</string>
+    <string name="copied">در حافظه کپی شد</string>
+
+    <!-- مسیر و ناوبری -->
+    <string name="route">مسیر</string>
+    <string name="routes">مسیرها</string>
+    <string name="alternative_routes">مسیرهای جایگزین</string>
+    <string name="calculating_route">در حال محاسبه‌ی مسیر…</string>
+    <string name="route_error">مسیر پیدا نشد؛ مقصد یا اتصال اینترنت را بررسی کنید</string>
+    <string name="route_fastest">سریع‌ترین</string>
+    <string name="route_shortest">کوتاه‌ترین</string>
+    <string name="route_avoid_tolls">بدون عوارض</string>
+    <string name="route_via">از %1$s</string>
+    <string name="start_navigation">شروع ناوبری</string>
+    <string name="stop_navigation">پایان ناوبری</string>
+    <string name="resume_navigation">ادامه‌ی ناوبری</string>
+    <string name="clear_route">حذف مسیر</string>
+    <string name="eta">رسیدن</string>
+    <string name="remaining">باقی‌مانده</string>
+    <string name="arrived">به مقصد رسیدید</string>
+    <string name="arrived_at_destination">به مقصد رسیدید</string>
+    <string name="rerouting">مسیر بازمحاسبه شد</string>
+    <string name="next_maneuver">مانور بعدی</string>
+    <string name="lane_guidance">راهنمای خطوط</string>
+
+    <!-- چراغ راهنمایی -->
+    <string name="traffic_light">چراغ راهنما</string>
+    <string name="light_red">قرمز</string>
+    <string name="light_yellow">زرد</string>
+    <string name="light_green">سبز</string>
+    <string name="light_countdown">%1$s ثانیه</string>
+    <string name="lights_ahead">%1$s چراغ در مسیر</string>
+    <string name="lights_estimate_note">زمان‌بندی چراغ‌ها تخمینی است</string>
+
+    <!-- سرعت، دوربین و محدودیت -->
+    <string name="speed_limit">محدودیت سرعت</string>
+    <string name="speed_camera">دوربین سرعت</string>
+    <string name="speed_camera_ahead">دوربین سرعت در %1$s</string>
+    <string name="speed_warning">سرعت شما بیش از حد مجاز است</string>
+    <string name="speed_kmh">%1$s کیلومتر بر ساعت</string>
+    <string name="traffic_light_camera">دوربین چراغ قرمز</string>
+
+    <!-- علاقه‌مندی‌ها و تاریخچه -->
+    <string name="favorites">ذخیره‌ها</string>
+    <string name="favorite_home">خانه</string>
+    <string name="favorite_work">محل کار</string>
+    <string name="favorite_add">افزودن به ذخیره‌ها</string>
+    <string name="favorite_added">به ذخیره‌ها اضافه شد</string>
+    <string name="favorite_removed">از ذخیره‌ها حذف شد</string>
+    <string name="favorite_name_hint">نام این مکان</string>
+    <string name="favorite_empty">هنوز مکانی ذخیره نکرده‌اید</string>
+    <string name="favorite_empty_hint">مکان‌های پرکاربردتان را ذخیره کنید تا با یک ضربه مسیریابی شود</string>
+    <string name="history">تاریخچه‌ی مسیرها</string>
+    <string name="history_empty">تاریخچه‌ای وجود ندارد</string>
+    <string name="clear_history">پاک‌کردن تاریخچه</string>
+    <string name="history_cleared">تاریخچه پاک شد</string>
+
+    <!-- صدا -->
+    <string name="voice">صدا</string>
+    <string name="voice_settings">تنظیمات صدا</string>
+    <string name="voice_download">دریافت صدا</string>
+    <string name="voice_preview">پیش‌نمایش</string>
+    <string name="voice_speed">سرعت گفتار</string>
+    <string name="voice_volume">بلندی صدا</string>
+    <string name="voice_test_phrase">سلام! مسیریابی شما آغاز شد. در سیصد متری، به راست بپیچید.</string>
+    <string name="voice_current">گوینده‌ی فعلی</string>
+    <string name="voice_installed">نصب‌شده</string>
+    <string name="voice_not_installed">دریافت‌نشده</string>
+    <string name="voice_bundled">همراه برنامه</string>
+    <string name="voice_select">انتخاب</string>
+    <string name="voice_selected">انتخاب شد</string>
+    <string name="speech_engine_missing">موتور صدا آماده نیست</string>
+    <string name="speech_offline_note">دستیار صوتی کاملاً آفلاین است و به سرویس گفتار اندروید وابسته نیست.</string>
+    <string name="announce_street_names">اعلام نام خیابان</string>
+    <string name="announce_lights">اعلام وضعیت چراغ</string>
+    <string name="announce_speed">هشدار سرعت و دوربین</string>
+    <string name="announce_arrival">اعلام رسیدن به مقصد</string>
+    <string name="announce_traffic">اعلام ترافیک و مسیر جایگزین</string>
+    <string name="verbosity">میزان توضیح صوتی</string>
+    <string name="verbosity_low">کم</string>
+    <string name="verbosity_normal">معمولی</string>
+    <string name="verbosity_high">زیاد</string>
+    <string name="voice_loading">در حال آماده‌سازی گوینده…</string>
+    <string name="voice_ready">گوینده آماده است</string>
+
+    <!-- دانلود و نقشه‌ی آفلاین -->
+    <string name="offline_maps">نقشه‌های آفلاین</string>
+    <string name="offline_maps_desc">شهرهای ایران را برای استفاده بدون اینترنت دانلود کنید</string>
+    <string name="download_city">دریافت نقشه‌ی شهر</string>
+    <string name="downloading">در حال دریافت…</string>
+    <string name="downloaded_city">ذخیره‌شده</string>
+    <string name="download_complete">دریافت کامل شد</string>
+    <string name="download_failed">دریافت ناموفق بود</string>
+    <string name="download_progress">%1$s٪ — %2$s از %3$s</string>
+    <string name="download_size">حجم تقریبی: %1$s</string>
+    <string name="storage_used">فضای مصرف‌شده: %1$s</string>
+    <string name="download_all_warning">این شهر حجم زیادی دارد؛ بهتر است با اتصال وای‌فای دانلود کنید.</string>
+    <string name="delete_region">حذف نقشه‌ی شهر</string>
+    <string name="all_provinces">همه‌ی استان‌ها</string>
+    <string name="cities_count">%1$s شهر</string>
+    <string name="offline_note">هر بسته طبق شرایط استفاده‌ی OpenFreeMap در قطعات کوچک و پشت‌سرهم دریافت می‌شود.</string>
+
+    <!-- تنظیمات -->
+    <string name="settings">تنظیمات</string>
+    <string name="appearance">ظاهر</string>
+    <string name="default_3d">شروع با نمای سه‌بعدی</string>
+    <string name="show_lights">نمایش چراغ‌های راهنمایی</string>
+    <string name="announcements">اعلام‌های صوتی</string>
+    <string name="navigation_settings">تنظیمات ناوبری</string>
+    <string name="speed_limit_alerts">هشدار محدودیت سرعت</string>
+    <string name="speed_limit_threshold">آستانه‌ی هشدار: %1$s کیلومتر بر ساعت</string>
+    <string name="camera_alerts">هشدار دوربین سرعت</string>
+    <string name="language">زبان</string>
+    <string name="language_persian">فارسی</string>
+    <string name="about">درباره</string>
+    <string name="data_sources">منابع داده و مجوزها</string>
+
+    <!-- اعلان و سرویس -->
+    <string name="notification_title">ناوبری فعال است</string>
+    <string name="notification_text">در حال هدایت به مقصد</string>
+    <string name="notification_channel_nav">ناوبری</string>
+    <string name="notification_destination">مقصد: %1$s</string>
+
+    <!-- خطاها -->
+    <string name="error_network">اتصال اینترنت برقرار نیست</string>
+    <string name="error_server">سرور پاسخ نداد؛ دوباره تلاش کنید</string>
+    <string name="error_no_route">برای این مبدأ و مقصد مسیری یافت نشد</string>
+    <string name="error_location">موقعیت مکانی در دسترس نیست</string>
+</resources>
