@@ -55,8 +55,12 @@ class OfflineRepository(private val context: Context) {
 
     init {
         try {
-            // سقف پیش‌فرض ۶۰۰۰ کاشی کل دستگاه است؛ برای چند شهر کافی نیست.
-            manager.setOfflineMapboxTileCountLimit(2_000_000L)
+            // سقف پیش‌فرض ۶۰۰۰ کاشی است؛ برای چند شهر کافی نیست.
+            // حالت کم‌مصرف Redmi 10C: 800K کاشی تا رم پر نشود
+            val isLite = try { com.iranamap.real.util.DevicePerformance.isLiteMode(context) } catch (_: Exception) { false }
+            val limit = if (isLite) 800_000L else 2_000_000L
+            manager.setOfflineMapboxTileCountLimit(limit)
+            Log.i(tag, "سقف کاشی: $limit liteMode=$isLite")
         } catch (e: Exception) {
             Log.w(tag, "تنظیم سقف کاشی ناموفق بود", e)
         }

@@ -136,16 +136,36 @@ class VoiceSettingsActivity : AppCompatActivity() {
 
     private fun previewVoice(model: VoiceModel) {
         lifecycleScope.launch {
-            if (!VoiceInstaller.isInstalled(model)) {
-                toast(getString(R.string.speech_engine_missing))
-                return@launch
+            toast("در حال آماده‌سازی صدا...")
+            val isInstalled = VoiceInstaller.isInstalled(model)
+            if (!isInstalled) {
+                // سعی کن صدای همراه (amir) را نصب کنی
+                toast("صدا نصب نشده - در حال نصب ${model.displayName}...")
+                val res = VoiceInstaller.ensureInstalled(model)
+                if (res.isFailure) {
+                    toast(getString(R.string.speech_engine_missing) + ": ${res.exceptionOrNull()?.message?.take(40)}")
+                    android.util.Log.e("VoiceSettings", "ensureInstalled failed", res.exceptionOrNull())
+                    return@launch
+                }
             }
             selectVoice(model)
-            loadInstalledVoice(model.id)
+            val loaded = withContext(Dispatchers.IO) {
+                runCatching { engine.loadVoice(VoiceInstaller.modelDir(model)) }.getOrDefault(false)
+            }
+            if (!loaded) {
+                toast(getString(R.string.speech_engine_missing) + " - بارگذاری ناموفق")
+                android.util.Log.e("VoiceSettings", "loadVoice failed for ${model.id}")
+                return@launch
+            }
             val settings = repo.current()
             engine.setSpeed(settings.speechRate)
             engine.setVolume(settings.speechVolume)
-            engine.speak(getString(R.string.voice_test_phrase), 90, "preview")
+            if (!engine.isReady) {
+                toast("موتور صدا آماده نیست - دوباره تلاش کنید")
+                return@launch
+            }
+            toast("پخش نمونه: ${model.displayName}")
+            engine.speak(getString(R.string.voice_test_phrase), 90, "preview_${System.currentTimeMillis()}")
         }
     }
 

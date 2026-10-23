@@ -32,11 +32,19 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         debug {
             isMinifyEnabled = false
+        }
+    }
+
+    // بهینه‌سازی برای دستگاه کم‌رم (Redmi 10C): کاهش حجم DEX و native libs
+    packaging {
+        jniLibs {
+            excludes += setOf("**/libonnxruntime.so.debug", "**/*.dbg.so")
         }
     }
 

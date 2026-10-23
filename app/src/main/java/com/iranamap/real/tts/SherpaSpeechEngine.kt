@@ -56,6 +56,8 @@ class SherpaSpeechEngine(private val context: Context) : SpeechEngine {
             return false
         }
         releaseTts()
+        // حالت کم‌مصرف: نخ کمتر برای Redmi 10C
+        val isLite = try { com.iranamap.real.util.DevicePerformance.isLiteMode(context) } catch (_: Exception) { false }
         return try {
             val config = OfflineTtsConfig(
                 model = OfflineTtsModelConfig(
@@ -67,7 +69,7 @@ class SherpaSpeechEngine(private val context: Context) : SpeechEngine {
                         noiseScaleW = 0.8f,
                         lengthScale = 1.0f
                     ),
-                    numThreads = 2,
+                    numThreads = if (isLite) 1 else 2,
                     debug = false,
                     provider = "cpu"
                 ),
@@ -106,30 +108,56 @@ class SherpaSpeechEngine(private val context: Context) : SpeechEngine {
     }
 
     private fun createTrack(sampleRate: Int) {
-        val minBuf = AudioTrack.getMinBufferSize(
-            sampleRate,
-            AudioFormat.CHANNEL_OUT_MONO,
-            AudioFormat.ENCODING_PCM_FLOAT
-        ).coerceAtLeast(sampleRate)
-        val attributes = AudioAttributes.Builder()
-            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-            .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
-            .build()
-        val format = AudioFormat.Builder()
-            .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
-            .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
-            .setSampleRate(sampleRate)
-            .build()
-        track = AudioTrack(
-            attributes,
-            format,
-            minBuf * 2,
-            AudioTrack.MODE_STREAM,
-            AudioManager.AUDIO_SESSION_ID_GENERATE
-        ).apply {
-            setVolume(volume)
-            play()
+        // فیکس Redmi 10C: بعضی دستگاه‌ها PCM_FLOAT پشتیبانی نمی‌کنند -> fallback به PCM_16BIT
+        val encodings = listOf(
+            AudioFormat.ENCODING_PCM_FLOAT,
+            AudioFormat.ENCODING_PCM_16BIT
+        )
+        var created: AudioTrack? = null
+        var lastError: Exception? = null
+        for (encoding in encodings) {
+            try {
+                val minBuf = AudioTrack.getMinBufferSize(
+                    sampleRate,
+                    AudioFormat.CHANNEL_OUT_MONO,
+                    encoding
+                ).coerceAtLeast(sampleRate)
+                if (minBuf <= 0) continue
+                val attributes = AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
+                    .build()
+                val format = AudioFormat.Builder()
+                    .setEncoding(encoding)
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                    .setSampleRate(sampleRate)
+                    .build()
+                val t = AudioTrack(
+                    attributes,
+                    format,
+                    minBuf * 2,
+                    AudioTrack.MODE_STREAM,
+                    AudioManager.AUDIO_SESSION_ID_GENERATE
+                )
+                if (t.state == AudioTrack.STATE_INITIALIZED) {
+                    t.setVolume(volume)
+                    runCatching { t.play() }
+                    created = t
+                    Log.i(logTag, "AudioTrack ساخته شد با encoding=${if (encoding == AudioFormat.ENCODING_PCM_FLOAT) "FLOAT" else "16BIT"} sampleRate=$sampleRate")
+                    break
+                } else {
+                    runCatching { t.release() }
+                }
+            } catch (e: Exception) {
+                lastError = e
+                Log.w(logTag, "ساخت AudioTrack با encoding $encoding ناموفق", e)
+            }
         }
+        if (created == null) {
+            Log.e(logTag, "هیچ AudioTrackای ساخته نشد", lastError)
+            throw lastError ?: IllegalStateException("AudioTrack init failed")
+        }
+        track = created
     }
 
     override fun setSpeed(speed: Float) {

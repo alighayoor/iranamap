@@ -309,10 +309,17 @@ class MapActivity : AppCompatActivity() {
         val mapRef = map ?: return
         lastStyleApplied = kind
         val dark = kind != MapStyleKind.LIGHT
+        // تشخیص حالت کم‌مصرف برای Redmi 10C - سه‌بعدی سبک
+        val isLite = try { com.iranamap.real.util.DevicePerformance.isLiteMode(this) } catch (_: Exception) { false }
+        // در حالت کم‌مصرف، تنظیمات is3d را به صورت هوشمند غیرفعال کن تا کرش نکند
+        val effective3d = if (isLite && settings.is3d) {
+            // در lite mode، سه‌بعدی فقط با tilt کم فعال می‌شود
+            settings.is3d
+        } else settings.is3d
         mapRef.setStyle(Style.Builder().fromUri(MapController.styleUrl(kind))) { loaded ->
             style = loaded
-            mapController.prepareStyle(loaded, dark)
-            mapController.set3dEnabled(loaded, settings.is3d)
+            mapController.prepareStyle(loaded, dark, isLite)
+            mapController.set3dEnabled(loaded, effective3d)
             mapController.setLightsVisible(loaded, settings.showTrafficLights)
             mapController.setCamerasVisible(loaded, settings.showCameras)
             activeRoute?.let { mapController.showRoute(loaded, it.points) }
@@ -368,13 +375,22 @@ class MapActivity : AppCompatActivity() {
         lastVoiceId = voiceId
         lifecycleScope.launch {
             val model = VoiceCatalog.find(voiceId) ?: VoiceCatalog.bundled
-            val dir = VoiceInstaller.ensureInstalled(model).getOrNull()
+            val dir = runCatching { VoiceInstaller.ensureInstalled(model).getOrNull() }.getOrNull()
             if (dir == null) {
-                toast(getString(R.string.speech_engine_missing))
+                android.util.Log.w("IranAmapTTS", "صدا نصب نشد: $voiceId")
+                // در حالت کم‌رم، پیام ملایم‌تر نمایش بده
+                toast(getString(R.string.speech_engine_missing) + " - در تنظیمات دوباره تلاش کنید")
                 return@launch
             }
-            val loaded = withContext(Dispatchers.IO) { speechEngine.loadVoice(dir) }
-            if (!loaded) toast(getString(R.string.speech_engine_missing))
+            val loaded = withContext(Dispatchers.IO) {
+                runCatching { speechEngine.loadVoice(dir) }.getOrDefault(false)
+            }
+            if (!loaded) {
+                android.util.Log.e("IranAmapTTS", "loadVoice failed for $voiceId dir=$dir")
+                toast(getString(R.string.speech_engine_missing) + " - مدل خراب است")
+            } else {
+                android.util.Log.i("IranAmapTTS", "صدا آماده: $voiceId")
+            }
         }
     }
 
@@ -464,11 +480,23 @@ class MapActivity : AppCompatActivity() {
     }
 
     private fun setDestination(point: GeoPoint, title: String, address: String) {
+        // FIX کرش Redmi 10C: اگر نقشه هنوز لود نشده، در pending نگه دار و کرش نکن
+        if (style == null || map == null) {
+            destination = point
+            destinationName = title.ifBlank { getString(R.string.destination_set) }
+            destinationAddress = address
+            pendingDestination = point
+            pendingDestinationName = destinationName
+            toast("نقشه در حال بارگذاری است... لطفا چند ثانیه صبر کنید")
+            // سعی کن استایل را دوباره لود کنی
+            if (style == null) loadStyle(settings.mapStyle)
+            return
+        }
         destination = point
         destinationName = title.ifBlank { getString(R.string.destination_set) }
         destinationAddress = address
-        mapController.showDestination(style, point)
-        announcer.announce(planner.onDestinationSet(destinationName))
+        runCatching { mapController.showDestination(style, point) }
+        runCatching { announcer.announce(planner.onDestinationSet(destinationName)) }
         lifecycleScope.launch { favoritesRepo.recordVisit(destinationName.orEmpty(), address, point) }
         if (currentLocation == null) {
             pendingDestination = point
@@ -490,20 +518,38 @@ class MapActivity : AppCompatActivity() {
         }
         routeJob?.cancel()
         routeJob = lifecycleScope.launch {
+            // نمایش لودینگ برای جلوگیری از سردرگمی کاربر
+            toast("در حال محاسبه مسیر...")
             val result = routeRepo.fetchRoutes(origin, dest, name)
             result.onSuccess { routes ->
-                alternativeRoutes = routes
-                routes.firstOrNull()?.let { route ->
-                    activeRoute = route
-                    tracker = RouteTracker(route)
-                    mapController.showRoute(style, route.points)
-                    mapController.showAlternativeRoutes(style, routes.drop(1).map { it.points })
-                    mapController.overviewCamera(map, route.points, settings.is3d)
-                    showRoutePanel(route)
-                    refreshSpeedLimit(route)
+                // فیلتر مسیرهای معتبر: حداقل 2 نقطه و دارای steps
+                val validRoutes = routes.filter { it.points.size >= 2 && it.totalMeters > 0 }
+                if (validRoutes.isEmpty()) {
+                    android.util.Log.w("IranAmapRoute", "هیچ مسیر معتبری از ${routes.size} مسیر دریافتی")
+                    toast(getString(R.string.route_error) + " - هندسه نامعتبر")
+                    return@onSuccess
                 }
-            }.onFailure {
-                toast(getString(R.string.route_error))
+                alternativeRoutes = validRoutes
+                validRoutes.firstOrNull()?.let { route ->
+                    // محافظت کامل در برابر null برای جلوگیری از کرش Redmi 10C
+                    runCatching {
+                        activeRoute = route
+                        tracker = RouteTracker(route)
+                        mapController.showRoute(style, route.points)
+                        mapController.showAlternativeRoutes(style, validRoutes.drop(1).map { it.points })
+                        // overviewCamera ممکن است با bounds خالی کرش کند
+                        runCatching { mapController.overviewCamera(map, route.points, settings.is3d) }
+                            .onFailure { e -> android.util.Log.w("IranAmapRoute", "overviewCamera failed", e) }
+                        showRoutePanel(route)
+                        refreshSpeedLimit(route)
+                    }.onFailure { e ->
+                        android.util.Log.e("IranAmapRoute", "نمایش مسیر ناموفق", e)
+                        toast("خطا در نمایش مسیر: ${e.message?.take(40)}")
+                    }
+                }
+            }.onFailure { e ->
+                android.util.Log.e("IranAmapRoute", "fetchRoutes failed", e)
+                toast(getString(R.string.route_error) + ": ${e.message?.take(50) ?: "خطای شبکه"}")
             }
         }
     }

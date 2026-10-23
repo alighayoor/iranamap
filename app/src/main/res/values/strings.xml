@@ -195,6 +195,7 @@
     <string name="notification_text">در حال هدایت به مقصد</string>
     <string name="notification_channel_nav">ناوبری</string>
     <string name="notification_destination">مقصد: %1$s</string>
+    <string name="lite_mode_on">حالت کم‌مصرف فعال است - سه‌بعدی سبک برای گوشی شما</string>
 
     <!-- خطاها -->
     <string name="error_network">اتصال اینترنت برقرار نیست</string>

@@ -77,10 +77,10 @@ class MapController(private val context: Context) {
 
     private val tag = "IranAmapMap"
 
-    /** آماده‌سازی استایل: برچسب فارسی، لایه‌های مسیر و چراغ. */
-    fun prepareStyle(style: Style, dark: Boolean) {
+    /** آماده‌سازی استایل: برچسب فارسی، لایه‌های مسیر و چراغ - پشتیبانی حالت کم‌مصرف */
+    fun prepareStyle(style: Style, dark: Boolean, liteMode: Boolean = false) {
         applyPersianLabels(style)
-        ensureThreeDimensionalBuildings(style, dark)
+        ensureThreeDimensionalBuildings(style, dark, liteMode)
         addRouteLayers(style)
         addLightLayers(style)
         addDestinationLayer(style)
@@ -120,8 +120,12 @@ class MapController(private val context: Context) {
         }
     }
 
-    /** فعال/غیرفعال کردن ساختمان‌های سه‌بعدی. */
-    fun ensureThreeDimensionalBuildings(style: Style, dark: Boolean) {
+    /** فعال/غیرفعال کردن ساختمان‌های سه‌بعدی - با حالت کم‌مصرف برای رم پایین (Redmi 10C). */
+    fun ensureThreeDimensionalBuildings(style: Style, dark: Boolean, liteMode: Boolean = false) {
+        // حالت کم‌مصرف: فقط رنگ لایه موجود را تغییر بده، لایه جدید نساز تا رم هدر نرود
+        if (liteMode) {
+            Log.i(tag, "حالت کم‌مصرف: ساختمان سه‌بعدی سبک")
+        }
         val existing = style.getLayer("building-3d")
         if (existing != null) {
             try {
@@ -141,12 +145,13 @@ class MapController(private val context: Context) {
             }
             return
         }
+        // در حالت کم‌مصرف، لایه اضافی نساز - فقط لایه موجود را استفاده کن
+        if (liteMode) return
         try {
             val layer = FillExtrusionLayer(LAYER_EXTRA_3D, "openmaptiles")
             layer.setSourceLayer("building")
             layer.setProperties(
                 PropertyFactory.fillExtrusionColor(if (dark) "#1A233F" else "#8FA6C4"),
-                // ارتفاع واقعی ساختمان از داده‌های OSM؛ در نبود آن ۱۲ متر فرض می‌شود
                 PropertyFactory.fillExtrusionHeight(
                     Expression.coalesce(
                         Expression.get("render_height"),
