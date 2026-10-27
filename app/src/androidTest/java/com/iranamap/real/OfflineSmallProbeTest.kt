@@ -50,7 +50,7 @@ class OfflineSmallProbeTest {
     private val requestCount = AtomicInteger()
 
     @Test
-    fun tinyRegionCanRenderAfterMapLibreNetworkIsDisabled() = runBlocking {
+    fun tinyRegionCanRenderAfterMapLibreNetworkIsDisabled() = runBlocking<Unit> {
         val context = ApplicationProvider.getApplicationContext<Context>()
         withTimeout(150_000L) {
             withContext(Dispatchers.Main) {
