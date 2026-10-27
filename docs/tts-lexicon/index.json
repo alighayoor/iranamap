@@ -16,9 +16,9 @@
   },
   "shiraz": {
     "name": "شیراز",
-    "file": "shiraz_prioritized_500.json",
-    "count": 138,
-    "note": "فقط نام‌های واقعی - بدون داده مصنوعی"
+    "file": "shiraz_full.json",
+    "count": 14366,
+    "note": "تمام معابر شیراز از Iran PBF 26-10-2026، 14366 نام یکتا (800 عدد خالص حذف شد) از 23596 قطعه راه - 31 بسته ElevenLabs"
   },
   "tabriz": {
     "name": "تبریز",
