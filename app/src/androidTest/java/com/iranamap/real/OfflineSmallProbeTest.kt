@@ -85,19 +85,25 @@ class OfflineSmallProbeTest {
                     assertTrue("No offline tiles were downloaded", status.completedTileCount > 0)
                     assertTrue("Probe exceeded the conservative tile budget", status.completedTileCount <= 100)
                     assertTrue("Probe exceeded the conservative byte budget", status.completedResourceSize < 20_000_000L)
-                    Log.i("IranAmapOfflineProbe", "completed tiles=${status.completedTileCount}, bytes=${status.completedResourceSize}, requests=${requestCount.get()}")
+                    Log.i("IranAmapOfflineProbe", "completed tiles=${status.completedTileCount}, bytes=${status.completedResourceSize}, resources=${status.completedResourceCount}/${status.requiredResourceCount}, precise=${status.isRequiredResourceCountPrecise}, requests=${requestCount.get()}")
 
                     // Remove ordinary browsing cache so the subsequent render depends on the pinned region.
                     clearAmbientCache(manager)
                     MapLibre.setConnected(false)
                     val bitmap = withTimeout(35_000L) { snapshot(context) }
                     val colors = HashSet<Int>()
-                    for (y in 24 until bitmap.height - 24 step 4) {
-                        for (x in 24 until bitmap.width - 24 step 4) colors.add(bitmap.getPixel(x, y))
+                    var yellowPixels = 0
+                    for (y in 0 until bitmap.height) {
+                        for (x in 0 until bitmap.width) {
+                            val pixel = bitmap.getPixel(x, y)
+                            if (x in 24 until bitmap.width - 24 && y in 24 until bitmap.height - 24 && x % 4 == 0 && y % 4 == 0) colors.add(pixel)
+                            if (android.graphics.Color.red(pixel) > 240 && android.graphics.Color.green(pixel) > 240 && android.graphics.Color.blue(pixel) < 50) yellowPixels++
+                        }
                     }
-                    assertTrue("Offline map snapshot appears uniformly blank", colors.size >= 8)
                     saveSnapshot(context, bitmap)
-                    Log.i("IranAmapOfflineProbe", "MapLibre-offline snapshot rendered; interior colors=${colors.size}")
+                    Log.i("IranAmapOfflineProbe", "MapLibre-offline snapshot: interior colors=${colors.size}, yellow pixels=$yellowPixels")
+                    assertTrue("Offline map snapshot appears uniformly blank", colors.size >= 8)
+                    assertTrue("Offline snapshot has large abnormal yellow blocks", yellowPixels < bitmap.width * bitmap.height / 100)
                 } finally {
                     withContext(NonCancellable) {
                         MapLibre.setConnected(null)
@@ -127,15 +133,19 @@ class OfflineSmallProbeTest {
 
     private suspend fun awaitComplete(region: OfflineRegion): OfflineRegionStatus =
         suspendCancellableCoroutine { cont ->
+            var reportedPremature = false
             region.setObserver(object : OfflineRegion.OfflineRegionObserver {
                 override fun onStatusChanged(status: OfflineRegionStatus) {
                     if (!cont.isActive) return
                     if (status.completedTileCount > 100 || status.completedResourceSize >= 20_000_000L) {
                         region.setDownloadState(OfflineRegion.STATE_INACTIVE)
                         cont.resumeWithException(IllegalStateException("Probe budget reached"))
-                    } else if (status.isComplete) {
+                    } else if (status.isComplete && status.isRequiredResourceCountPrecise && status.requiredResourceCount > 0L) {
                         region.setDownloadState(OfflineRegion.STATE_INACTIVE)
                         cont.resume(status)
+                    } else if (status.isComplete && !status.isRequiredResourceCountPrecise && !reportedPremature) {
+                        reportedPremature = true
+                        Log.w("IranAmapOfflineProbe", "Completion reported before resource count was precise: ${status.completedResourceCount}/${status.requiredResourceCount}")
                     }
                 }
                 override fun onError(error: OfflineRegionError) {

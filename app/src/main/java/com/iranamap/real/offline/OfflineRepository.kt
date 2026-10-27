@@ -98,12 +98,16 @@ class OfflineRepository(private val context: Context) {
                     zoom = meta.zoom,
                     chunk = meta.chunk,
                     sizeBytes = status?.completedResourceSize ?: 0L,
-                    isComplete = status?.isComplete == true
+                    isComplete = status?.let { isRegionComplete(it) } == true
                 )
             )
         }
         result
     }
+
+    private fun isRegionComplete(status: OfflineRegionStatus): Boolean = OfflinePlanner.isRegionComplete(
+        status.completedResourceCount, status.requiredResourceCount, status.isRequiredResourceCountPrecise
+    )
 
     private suspend fun statusOf(region: OfflineRegion): OfflineRegionStatus? =
         suspendCancellableCoroutine { cont ->
@@ -194,7 +198,8 @@ class OfflineRepository(private val context: Context) {
                                 completedResources = status.completedResourceCount,
                                 requiredResources = status.requiredResourceCount,
                                 previousEstimatedBytes = previousBytes,
-                                currentEstimatedBytes = pack.estimatedBytes
+                                currentEstimatedBytes = pack.estimatedBytes,
+                                countIsPrecise = status.isRequiredResourceCountPrecise
                             )
                             onProgress(
                                 DownloadProgress(
@@ -206,7 +211,7 @@ class OfflineRepository(private val context: Context) {
                                     currentZoom = pack.minZoom
                                 )
                             )
-                            if (status.isComplete) {
+                            if (isRegionComplete(status)) {
                                 stopRegion(region)
                                 if (cont.isActive) cont.resume(Result.success(Unit))
                             }

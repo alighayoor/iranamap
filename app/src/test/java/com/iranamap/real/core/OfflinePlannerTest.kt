@@ -82,6 +82,21 @@ class OfflinePlannerTest {
     }
 
     @Test
+    fun progressNeverShowsFullCompletionForAnImpreciseResourceCount() {
+        val progress = OfflinePlanner.estimateProgress(0, 1, 10, 10, 0, 1000, countIsPrecise = false)
+        assertEquals(99, progress.percent)
+    }
+
+    @Test
+    fun regionIsNotCompleteUntilRequiredCountIsPreciseAndNonzero() {
+        assertTrue(!OfflinePlanner.isRegionComplete(10, 10, false))
+        assertTrue(!OfflinePlanner.isRegionComplete(0, 0, true))
+        assertTrue(!OfflinePlanner.isRegionComplete(9, 10, true))
+        assertTrue(OfflinePlanner.isRegionComplete(10, 10, true))
+        assertTrue(OfflinePlanner.isRegionComplete(11, 10, true))
+    }
+
+    @Test
     fun downloadedCityRequiresEveryPackToBeComplete() {
         assertTrue(OfflinePlanner.allPacksComplete(3, listOf(2, 0, 1)))
         assertTrue(!OfflinePlanner.allPacksComplete(3, listOf(0, 1)))

@@ -44,18 +44,24 @@ object OfflinePlanner {
         completedResources: Long,
         requiredResources: Long,
         previousEstimatedBytes: Long,
-        currentEstimatedBytes: Long
+        currentEstimatedBytes: Long,
+        countIsPrecise: Boolean = true
     ): OfflineProgressEstimate {
         val count = packCount.coerceAtLeast(1)
         val index = packIndex.coerceIn(0, count - 1)
         val fraction = if (requiredResources > 0) {
             (completedResources.toDouble() / requiredResources.toDouble()).coerceIn(0.0, 1.0)
         } else 0.0
-        val percent = (((index + fraction) / count) * 100.0).toInt().coerceIn(0, 100)
+        val rawPercent = (((index + fraction) / count) * 100.0).toInt().coerceIn(0, 100)
+        val percent = if (countIsPrecise) rawPercent else rawPercent.coerceAtMost(99)
         val bytes = previousEstimatedBytes.coerceAtLeast(0L) +
             (currentEstimatedBytes.coerceAtLeast(0L) * fraction).toLong()
         return OfflineProgressEstimate(percent, bytes)
     }
+
+    /** شمارش منابع باید قطعی و غیرصفر باشد؛ مقایسهٔ تعدادها به‌تنهایی کافی نیست. */
+    fun isRegionComplete(completedResources: Long, requiredResources: Long, countIsPrecise: Boolean): Boolean =
+        countIsPrecise && requiredResources > 0 && completedResources >= requiredResources
 
     /** هر بخش باید کامل باشد؛ صرفِ وجود چند فایل ناقص به معنی دانلود شهر نیست. */
     fun allPacksComplete(expectedCount: Int, completedIndices: Collection<Int>): Boolean =
