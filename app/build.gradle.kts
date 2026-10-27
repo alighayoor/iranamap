@@ -10,6 +10,8 @@ plugins {
 //   ./gradlew assembleDebug -PappId=ir.shoma.naghshe
 // اگر تعیین نشود، مقدار پیش‌فرض استفاده می‌شود.
 val appId: String = (project.findProperty("appId") as String?) ?: "com.iranamap.real"
+// ساخت جداگانه‌ی x86_64 فقط برای تست شبیه‌ساز؛ APK معمولی همچنان مخصوص گوشی ARM است.
+val emulatorBuild = providers.gradleProperty("emulatorBuild").orNull == "true"
 
 android {
     // namespace همان فضای نام کد است و معمولاً ثابت می‌ماند
@@ -24,9 +26,9 @@ android {
         versionName = "3.3.0-fa"
         resourceConfigurations += listOf("fa")
         vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {
-            // فقط معماری گوشی‌های واقعی؛ x86 برای شبیه‌ساز لازم نیست و حجم را دو برابر می‌کند
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            abiFilters += if (emulatorBuild) listOf("x86_64") else listOf("arm64-v8a", "armeabi-v7a")
         }
     }
 
@@ -93,6 +95,10 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.0.21")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:core:1.6.1")
+    androidTestImplementation("androidx.test:rules:1.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
 }
 
 // ---- sherpa-onnx (موتور گفتار کاملاً آفلاین) ----

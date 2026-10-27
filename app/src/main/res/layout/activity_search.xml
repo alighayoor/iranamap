@@ -21,10 +21,13 @@
             android:paddingStart="@dimen/space_m"
             android:paddingEnd="@dimen/space_s">
 
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+            <ImageButton
+                android:id="@+id/btnSubmitSearch"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/search"
+                android:padding="@dimen/space_s"
                 android:src="@drawable/ic_search"
                 app:tint="@color/text_secondary_dark" />
 

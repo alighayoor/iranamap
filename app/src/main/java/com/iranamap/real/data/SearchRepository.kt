@@ -2,6 +2,7 @@ package com.iranamap.real.data
 
 import com.iranamap.real.core.GeoMath
 import com.iranamap.real.core.GeoPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -24,7 +25,13 @@ class SearchRepository(private val api: NominatimApi = ApiClient.nominatim) {
                 val b = GeoMath.boundsAround(it, 60.0)
                 String.format(Locale.US, "%.4f,%.4f,%.4f,%.4f", b.minLng, b.maxLat, b.maxLng, b.minLat)
             }
-            val places = runCatching { api.search(query = q, viewBox = viewBox) }.getOrElse { emptyList() }
+            val places = try {
+                api.search(query = q, viewBox = viewBox)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                emptyList()
+            }
             places.mapNotNull { place ->
                 val p = GeoPoint(place.latitude, place.longitude)
                 if (!GeoMath.isPlausibleIranPoint(p)) return@mapNotNull null

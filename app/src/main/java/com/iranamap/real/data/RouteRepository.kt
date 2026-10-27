@@ -5,12 +5,24 @@ import com.iranamap.real.core.GeoPoint
 import com.iranamap.real.core.ManeuverText
 import com.iranamap.real.nav.ActiveRoute
 import com.iranamap.real.nav.NavStep
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
 /** ساخت مسیر از سرویس OSRM و تبدیل آن به مدل داخلی. */
-class RouteRepository(private val api: OsrmApi = ApiClient.osrm) {
+class RouteRepository(
+    private val api: OsrmApi = ApiClient.osrm,
+    private val backup: OsrmApi = ApiClient.osrmBackup
+) {
+
+    private suspend fun requestRoute(coords: String, alternatives: Boolean): OsrmResponse = try {
+        api.route(coords, alternatives = alternatives)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        backup.route(coords, alternatives = alternatives)
+    }
 
     suspend fun fetchRoute(
         origin: GeoPoint,
@@ -27,9 +39,7 @@ class RouteRepository(private val api: OsrmApi = ApiClient.osrm) {
             String.format(Locale.US, "%.6f,%.6f", it.lng, it.lat)
         }
         try {
-            val response = runCatching { api.route(coordString) }
-                .recoverCatching { ApiClient.osrmBackup.route(coordString) }
-                .getOrElse { throw it }
+            val response = requestRoute(coordString, alternatives = false)
             val route = response.routes?.firstOrNull()
                 ?: return@withContext Result.failure(IllegalStateException("مسیری پیدا نشد (${response.code})"))
             val path = route.geometry?.coordinates
@@ -49,6 +59,8 @@ class RouteRepository(private val api: OsrmApi = ApiClient.osrm) {
                     destinationName = destinationName
                 )
             )
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -68,9 +80,7 @@ class RouteRepository(private val api: OsrmApi = ApiClient.osrm) {
             String.format(Locale.US, "%.6f,%.6f", it.lng, it.lat)
         }
         try {
-            val response = runCatching { api.route(coordString, alternatives = alternatives) }
-                .recoverCatching { ApiClient.osrmBackup.route(coordString, alternatives = alternatives) }
-                .getOrElse { throw it }
+            val response = requestRoute(coordString, alternatives)
             val raw = response.routes.orEmpty()
             if (raw.isEmpty()) {
                 return@withContext Result.failure(IllegalStateException("مسیری پیدا نشد (${response.code})"))
@@ -92,6 +102,8 @@ class RouteRepository(private val api: OsrmApi = ApiClient.osrm) {
             } else {
                 Result.success(routes)
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }

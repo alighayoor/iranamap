@@ -45,7 +45,7 @@ class NavStateMapperTest {
         val nav = NavStateMapper.toNavState(state(), step, 48.0, cal.timeInMillis, tehran)
         assertEquals(1, nav.stepIndex)
         assertEquals(ManeuverKind.TURN_LEFT, nav.maneuver)
-        assertEquals("خیابان ولیعصر", nav.streetName)
+        assertEquals("خیابان انقلاب", nav.streetName)
         assertEquals(240.0, nav.distanceToManeuverMeters, 0.001)
         assertEquals(700.0, nav.stepLengthMeters, 0.001)
         assertEquals(48.0, nav.speedKmh, 0.001)
@@ -57,9 +57,38 @@ class NavStateMapperTest {
     }
 
     @Test
-    fun fallsBackToStepStreetName() {
-        val nav = NavStateMapper.toNavState(state().copy(currentStreetName = null), step, 30.0, 0L, tehran)
-        assertEquals("خیابان انقلاب", nav.streetName)
+    fun fallsBackToCurrentStreetWhenUpcomingStreetIsMissing() {
+        val nav = NavStateMapper.toNavState(state(), step.copy(streetName = null), 30.0, 0L, tehran)
+        assertEquals("خیابان ولیعصر", nav.streetName)
+    }
+
+    @Test
+    fun distanceAndManeuverReferToUpcomingStep() {
+        val current = step.copy(index = 0, kind = ManeuverKind.DEPART, streetName = "خیابان فعلی")
+        val upcoming = step.copy(index = 1, kind = ManeuverKind.TURN_RIGHT, streetName = "خیابان بعدی")
+        val route = ActiveRoute(
+            points = listOf(GeoPoint(35.7, 51.4), GeoPoint(35.71, 51.41)),
+            steps = listOf(current, upcoming),
+            totalMeters = 1000.0,
+            totalSeconds = 120.0,
+            destinationName = null
+        )
+        val trackerState = state().copy(stepIndex = 0, currentStreetName = current.streetName)
+        val target = NavStateMapper.upcomingStep(trackerState, route)
+        val nav = NavStateMapper.toNavState(trackerState, target, 30.0, 0L, tehran)
+        assertEquals(ManeuverKind.TURN_RIGHT, nav.maneuver)
+        assertEquals("خیابان بعدی", nav.streetName)
+        assertEquals(trackerState.distanceToManeuverMeters, nav.distanceToManeuverMeters, 0.001)
+    }
+
+    @Test
+    fun upcomingStepFallsBackAtEndOrWhenRouteIsMissing() {
+        val route = ActiveRoute(
+            points = emptyList(), steps = listOf(step), totalMeters = 0.0,
+            totalSeconds = 0.0, destinationName = null
+        )
+        assertEquals(step, NavStateMapper.upcomingStep(state().copy(stepIndex = 0), route))
+        assertEquals(null, NavStateMapper.upcomingStep(state(), null))
     }
 
     @Test

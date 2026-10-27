@@ -105,7 +105,9 @@
     <string name="light_green">سبز</string>
     <string name="light_countdown">%1$s ثانیه</string>
     <string name="lights_ahead">%1$s چراغ در مسیر</string>
-    <string name="lights_estimate_note">زمان‌بندی چراغ‌ها تخمینی است</string>
+    <string name="lights_estimate_note">وضعیت چراغ نامشخص است؛ از چراغ واقعی پیروی کنید</string>
+    <string name="light_unknown">وضعیت نامشخص</string>
+    <string name="light_obey_signal">به چراغ واقعی توجه کنید</string>
 
     <!-- سرعت، دوربین و محدودیت -->
     <string name="speed_limit">محدودیت سرعت</string>

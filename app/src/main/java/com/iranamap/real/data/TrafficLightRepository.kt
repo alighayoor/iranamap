@@ -1,8 +1,6 @@
 package com.iranamap.real.data
 
 import com.iranamap.real.core.GeoPoint
-import com.iranamap.real.core.LightTiming
-import com.iranamap.real.core.TrafficLightModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -10,14 +8,10 @@ import java.util.Locale
 data class TrafficLight(
     val id: Long,
     val point: GeoPoint,
-    val name: String?,
-    val timing: LightTiming
+    val name: String?
 )
 
-/**
- * چراغ‌های راهنمایی را از OpenStreetMap (Overpass) می‌گیرد و برای هر چراغ
- * یک زمان‌بندی پایدار (قابل یادگیری) در نظر می‌گیرد.
- */
+/** موقعیت چراغ‌ها از OpenStreetMap است؛ OSM رنگ یا زمان‌بندی زنده ارائه نمی‌کند. */
 class TrafficLightRepository(private val api: OverpassApi = ApiClient.overpass) {
 
     private val cache = LinkedHashMap<String, Pair<Long, List<TrafficLight>>>()
@@ -39,14 +33,10 @@ class TrafficLightRepository(private val api: OverpassApi = ApiClient.overpass) 
             val lights = elements.mapNotNull { el ->
                 val lat = el.lat ?: return@mapNotNull null
                 val lon = el.lon ?: return@mapNotNull null
-                val point = GeoPoint(lat, lon)
-                val seed = TrafficLightModel.seedFor(lat, lon, el.id)
-                val arterial = (seed % 3 == 0)
                 TrafficLight(
                     id = el.id ?: 0L,
-                    point = point,
-                    name = el.tags?.get("name"),
-                    timing = TrafficLightModel.timingFor(seed, arterial)
+                    point = GeoPoint(lat, lon),
+                    name = el.tags?.get("name")
                 )
             }
             cache[key] = now to lights

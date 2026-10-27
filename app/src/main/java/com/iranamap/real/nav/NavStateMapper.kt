@@ -7,6 +7,13 @@ import java.util.Calendar
 /** تبدیل وضعیت ردیاب به وضعیت مورد نیاز سیاست اعلام صوتی. */
 object NavStateMapper {
 
+    /** فاصله‌ی ردیاب تا شروع گام بعدی است، پس جهت اعلامی نیز باید گام بعدی باشد. */
+    fun upcomingStep(state: TrackerState, route: ActiveRoute?): NavStep? {
+        val steps = route?.steps ?: return null
+        return steps.getOrNull(state.stepIndex + 1) ?: steps.getOrNull(state.stepIndex)
+    }
+
+    /** [step] مانور پیشِ رو است، نه خیابانی که خودرو هم‌اکنون روی آن است. */
     fun toNavState(
         state: TrackerState,
         step: NavStep?,
@@ -21,7 +28,7 @@ object NavStateMapper {
         return NavState(
             stepIndex = state.stepIndex,
             maneuver = step?.kind ?: ManeuverKind.CONTINUE,
-            streetName = state.currentStreetName ?: step?.streetName,
+            streetName = step?.streetName?.takeIf { it.isNotBlank() } ?: state.currentStreetName,
             exitNumber = step?.exitNumber,
             distanceToManeuverMeters = state.distanceToManeuverMeters,
             stepLengthMeters = state.stepLengthMeters,

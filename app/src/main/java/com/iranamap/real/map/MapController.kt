@@ -3,7 +3,6 @@ package com.iranamap.real.map
 import android.content.Context
 import android.util.Log
 import com.iranamap.real.core.GeoPoint
-import com.iranamap.real.core.LightColor
 import com.iranamap.real.settings.MapStyleKind
 import com.iranamap.real.util.toLatLng
 import org.maplibre.android.camera.CameraPosition
@@ -31,11 +30,10 @@ data class PoiMarker(
     val name: String
 )
 
+/** نشانگر موقعیت چراغ؛ رنگ و شمارش زنده از OSM قابل دریافت نیست. */
 data class LightMarker(
     val id: Long,
     val point: GeoPoint,
-    val color: LightColor,
-    val remainingSec: Int,
     val distanceMeters: Double
 )
 
@@ -281,8 +279,8 @@ class MapController(private val context: Context) {
         val source = style.getSource(SRC_LIGHTS) as? GeoJsonSource ?: return
         val features = markers.map { marker ->
             val feature = Feature.fromGeometry(Point.fromLngLat(marker.point.lng, marker.point.lat))
-            feature.addStringProperty("color", colorHex(marker.color))
-            feature.addNumberProperty("remaining", marker.remainingSec.toDouble())
+            // خاکستری یعنی موقعیت شناخته شده است، نه رنگ یا زمان چراغ.
+            feature.addStringProperty("color", "#98A3B3")
             feature.addNumberProperty("id", marker.id.toDouble())
             feature
         }
@@ -298,12 +296,6 @@ class MapController(private val context: Context) {
         } catch (e: Exception) {
             Log.w(tag, "تغییر نمایش چراغ‌ها ناموفق بود", e)
         }
-    }
-
-    private fun colorHex(color: LightColor): String = when (color) {
-        LightColor.RED -> "#FF3B30"
-        LightColor.YELLOW -> "#FFC300"
-        LightColor.GREEN -> "#2ECC71"
     }
 
     private fun addUserLayers(style: Style) {

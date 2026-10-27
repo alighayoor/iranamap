@@ -34,8 +34,6 @@ import com.iranamap.real.core.Categories
 import com.iranamap.real.core.GeoMath
 import com.iranamap.real.core.GeoPoint
 import com.iranamap.real.core.LanePlanner
-import com.iranamap.real.core.LightColor
-import com.iranamap.real.core.LightForecast
 import com.iranamap.real.core.ManeuverText
 import com.iranamap.real.core.PersianText
 import com.iranamap.real.core.PoiCategory
@@ -43,7 +41,6 @@ import com.iranamap.real.core.RouteBrief
 import com.iranamap.real.core.ManeuverInfo
 import com.iranamap.real.core.SpeedModel
 import com.iranamap.real.core.SpeechPlanner
-import com.iranamap.real.core.TrafficLightModel
 import com.iranamap.real.core.VoiceCatalog
 import com.iranamap.real.data.CameraRepository
 import com.iranamap.real.data.FavoritesRepository
@@ -82,7 +79,6 @@ import com.iranamap.real.util.showIf
 import com.iranamap.real.util.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.maplibre.android.camera.CameraPosition
@@ -136,7 +132,8 @@ class MapActivity : AppCompatActivity() {
     private val settingsRepo by lazy { SettingsRepository.get(this) }
     private val favoritesRepo by lazy { FavoritesRepository.get(this) }
     private val searchRepo = SearchRepository()
-    private val routeRepo = RouteRepository()
+    // قابل جایگزینی در تست دستگاه برای جلوگیری از وابستگی سناریوها به شبکه.
+    private var routeRepo = RouteRepository()
     private val lightRepo = TrafficLightRepository()
     private val cameraRepo = CameraRepository()
     private val poiRepo = PoiRepository()
@@ -167,16 +164,12 @@ class MapActivity : AppCompatActivity() {
 
     private var lights: List<TrafficLight> = emptyList()
     private var cameras: List<SpeedCamera> = emptyList()
-    private var nearestLightForecast: LightForecast? = null
-    private var nearestLightDistance = 0.0
-    private var nearestLightId = 0L
     private var currentSpeedLimit: Int? = null
 
     private var searchJob: Job? = null
     private var routeJob: Job? = null
     private var lightsJob: Job? = null
     private var camerasJob: Job? = null
-    private var tickerJob: Job? = null
 
     private var lastStyleApplied: MapStyleKind? = null
     private var lastVoiceId: String? = null
@@ -367,6 +360,11 @@ class MapActivity : AppCompatActivity() {
                     mapController.setLightsVisible(it, newSettings.showTrafficLights)
                     mapController.setCamerasVisible(it, newSettings.showCameras)
                 }
+                if (!newSettings.showTrafficLights) {
+                    lightCard.hide()
+                    lightsJob?.cancel()
+                    lastLightsCenter = null
+                }
             }
         }
     }
@@ -480,24 +478,18 @@ class MapActivity : AppCompatActivity() {
     }
 
     private fun setDestination(point: GeoPoint, title: String, address: String) {
-        // FIX کرش Redmi 10C: اگر نقشه هنوز لود نشده، در pending نگه دار و کرش نکن
-        if (style == null || map == null) {
-            destination = point
-            destinationName = title.ifBlank { getString(R.string.destination_set) }
-            destinationAddress = address
-            pendingDestination = point
-            pendingDestinationName = destinationName
-            toast("نقشه در حال بارگذاری است... لطفا چند ثانیه صبر کنید")
-            // سعی کن استایل را دوباره لود کنی
-            if (style == null) loadStyle(settings.mapStyle)
-            return
-        }
+        if (!point.lat.isFinite() || !point.lng.isFinite() ||
+            point.lat !in -90.0..90.0 || point.lng !in -180.0..180.0) return
+        // انتخاب جدید باید درخواست قبلی و مقصد منتظر GPS را باطل کند.
+        clearRoute()
         destination = point
-        destinationName = title.ifBlank { getString(R.string.destination_set) }
+        val name = title.ifBlank { getString(R.string.destination_set) }
+        destinationName = name
         destinationAddress = address
+        // اگر استایل هنوز آماده نیست، در loadStyle پس از بارگذاری دوباره رسم می‌شود.
         runCatching { mapController.showDestination(style, point) }
-        runCatching { announcer.announce(planner.onDestinationSet(destinationName)) }
-        lifecycleScope.launch { favoritesRepo.recordVisit(destinationName.orEmpty(), address, point) }
+        runCatching { announcer.announce(planner.onDestinationSet(name)) }
+        lifecycleScope.launch { favoritesRepo.recordVisit(name, address, point) }
         if (currentLocation == null) {
             pendingDestination = point
             pendingDestinationName = destinationName
@@ -556,7 +548,7 @@ class MapActivity : AppCompatActivity() {
 
     private fun refreshSpeedLimit(route: ActiveRoute) {
         currentSpeedLimit = route.steps.firstOrNull()?.let { step ->
-            SpeedModel.parseMaxspeed(step.maxspeed, step.roadClass)
+            SpeedModel.parseMaxspeed(step.maxspeed)
         }
         tvLimit.text = SpeedModel.limitLabel(currentSpeedLimit)
     }
@@ -697,25 +689,20 @@ class MapActivity : AppCompatActivity() {
         speedCard.show()
         startLocationUpdates()
         startForegroundService()
-        lifecycleScope.launch {
-            val lightsOnRoute = runCatching { lightRepo.lightsAround(route.points.first(), 3000) }
-                .getOrDefault(emptyList())
-            lights = lightsOnRoute
-            announcer.announce(
-                planner.onRouteStart(
-                    RouteBrief(
-                        destinationName = route.destinationName,
-                        totalMeters = route.totalMeters,
-                        totalSeconds = route.totalSeconds.toLong(),
-                        lightCount = lightsOnRoute.size,
-                        firstManeuver = route.steps.getOrNull(1)?.let {
-                            ManeuverInfo(it.kind, it.streetName, it.exitNumber, it.distanceMeters)
-                        }
-                    )
+        // شروع راهنمایی نباید منتظر شبکه‌ی چراغ‌ها بماند؛ تعداد چراغ‌های کل مسیر هم فعلاً معلوم نیست.
+        announcer.announce(
+            planner.onRouteStart(
+                RouteBrief(
+                    destinationName = route.destinationName,
+                    totalMeters = route.totalMeters,
+                    totalSeconds = route.totalSeconds.toLong(),
+                    lightCount = 0,
+                    firstManeuver = route.steps.getOrNull(1)?.let {
+                        ManeuverInfo(it.kind, it.streetName, it.exitNumber, it.startAlongMeters)
+                    }
                 )
             )
-        }
-        startTicker()
+        )
     }
 
     private fun stopNavigation(speak: Boolean) {
@@ -727,17 +714,27 @@ class MapActivity : AppCompatActivity() {
         btnStopNav.hide()
         btnStartNav.showIf(activeRoute != null)
         lightCard.hide()
-        tickerJob?.cancel()
         resetLightVisuals()
     }
 
     private fun clearRoute() {
+        routeJob?.cancel()
+        routeJob = null
+        pendingDestination = null
+        pendingDestinationName = null
+        lightsJob?.cancel()
+        camerasJob?.cancel()
+        lights = emptyList()
+        cameras = emptyList()
+        lastLightsCenter = null
+        lastCamerasCenter = null
         stopNavigation(speak = false)
         activeRoute = null
         alternativeRoutes = emptyList()
         tracker = null
         destination = null
         destinationName = null
+        destinationAddress = null
         navPanel.hide()
         speedCard.hide()
         lightCard.hide()
@@ -792,40 +789,29 @@ class MapActivity : AppCompatActivity() {
 
     private fun navStateFor(state: TrackerState, speedKmh: Double) = NavStateMapper.toNavState(
         state = state,
-        step = activeRoute?.steps?.getOrNull(state.stepIndex),
+        step = NavStateMapper.upcomingStep(state, activeRoute),
         speedKmh = speedKmh,
         nowMillis = System.currentTimeMillis()
     )
 
     private fun updateNavigationUi(state: TrackerState) {
         val route = activeRoute ?: return
-        val step = route.steps.getOrNull(state.stepIndex)
-        val nextStep = route.steps.getOrNull(state.stepIndex + 1) ?: step
-        val kind = when {
-            state.distanceToManeuverMeters < 25 && nextStep != null -> nextStep.kind
-            step != null -> step.kind
-            else -> com.iranamap.real.core.ManeuverKind.CONTINUE
-        }
+        val currentStep = route.steps.getOrNull(state.stepIndex)
+        val nextStep = NavStateMapper.upcomingStep(state, route)
+        val kind = nextStep?.kind ?: com.iranamap.real.core.ManeuverKind.CONTINUE
         tvManeuverIcon.text = ManeuverText.glyph(kind)
-        tvManeuverText.text = if (state.distanceToManeuverMeters < 25 && nextStep != null) {
-            ManeuverText.shortPhrase(nextStep.kind, nextStep.exitNumber)
-        } else {
-            ManeuverText.shortPhrase(step?.kind ?: kind, step?.exitNumber)
-        }
+        tvManeuverText.text = ManeuverText.shortPhrase(kind, nextStep?.exitNumber)
         tvManeuverDistance.text = PersianText.formatDistance(state.distanceToManeuverMeters)
-        tvStreetName.text = ManeuverText.withRoadType(state.currentStreetName).orEmpty()
+        tvStreetName.text = ManeuverText.withRoadType(nextStep?.streetName ?: state.currentStreetName).orEmpty()
         val trafficSeconds = trafficAwareSeconds(state.remainingSeconds.toDouble(), route)
         tvRemainingDistance.text = PersianText.formatDistance(state.remainingMeters)
         tvRemainingTime.text = PersianText.formatDuration(trafficSeconds)
         tvEta.text = getString(R.string.eta) + " " + etaText(trafficSeconds)
-        if (nextStep != null) {
-            val plan = LanePlanner.plan(nextStep.laneIndications, nextStep.laneValid, nextStep.kind)
-            laneGuidance.setPlan(if (plan.lanes.isEmpty()) null else plan)
-            SpeedModel.parseMaxspeed(nextStep.maxspeed, nextStep.roadClass)?.let {
-                currentSpeedLimit = it
-                tvLimit.text = SpeedModel.limitLabel(it)
-            }
-        }
+        val plan = nextStep?.let { LanePlanner.plan(it.laneIndications, it.laneValid, it.kind) }
+        laneGuidance.setPlan(if (plan == null || plan.lanes.isEmpty()) null else plan)
+        // تنها داده‌ی صریح maxspeed قابل نمایش است؛ نام خیابان حد مجاز واقعی را تعیین نمی‌کند.
+        currentSpeedLimit = SpeedModel.parseMaxspeed(currentStep?.maxspeed)
+        tvLimit.text = SpeedModel.limitLabel(currentSpeedLimit)
     }
 
     /** زمان باقی‌مانده با اعمال ترافیک تخمینی (بر اساس کلاس راه و ساعت روز). */
@@ -859,67 +845,46 @@ class MapActivity : AppCompatActivity() {
 
     // ---------------------------------------------------------------- چراغ‌ها
     private fun refreshLights(point: GeoPoint, state: TrackerState) {
-        val last = lastLightsCenter
-        if (last == null || GeoMath.distanceMeters(last, point) > 400) {
-            if (lightsJob?.isActive == true) return
-            lastLightsCenter = point
-            lightsJob = lifecycleScope.launch {
-                val fetched = runCatching { lightRepo.lightsAround(point, 2500) }.getOrDefault(emptyList())
-                if (fetched.isNotEmpty()) lights = fetched
-            }
-        }
-        updateLightForecasts(state)
-    }
-
-    private fun updateLightForecasts(state: TrackerState) {
-        val route = activeRoute ?: return
-        val activeTracker = tracker ?: return
-        val speedKmh = currentSpeedKmh().coerceAtLeast(15.0)
-        val ahead = activeTracker.lightsAheadOnRoute(lights.map { it.id to it.point }, state.distanceAlong, 2500.0)
-        if (ahead.isEmpty()) {
-            nearestLightForecast = null
+        if (!settings.showTrafficLights) {
             lightCard.hide()
             mapController.showLights(style, emptyList())
             return
         }
-        val secondsOfDay = secondsOfDay()
-        val byId = lights.associateBy { it.id }
-        val markers = ArrayList<LightMarker>()
-        val aheadList = ArrayList<com.iranamap.real.core.LightAhead>()
-        for ((id, lightPoint, aheadMeters) in ahead.take(8)) {
-            val light = byId[id] ?: continue
-            val travelSec = aheadMeters / (speedKmh / 3.6)
-            val forecast = TrafficLightModel.forecastAtArrival(light.timing, secondsOfDay, travelSec)
-            markers.add(LightMarker(id, lightPoint, forecast.color, forecast.remainingSec, aheadMeters))
-            aheadList.add(com.iranamap.real.core.LightAhead(id, aheadMeters, forecast))
+        val last = lastLightsCenter
+        if ((last == null || GeoMath.distanceMeters(last, point) > 400) && lightsJob?.isActive != true) {
+            lastLightsCenter = point
+            val requestedRoute = activeRoute
+            lightsJob = lifecycleScope.launch {
+                val fetched = runCatching { lightRepo.lightsAround(point, 2500) }.getOrDefault(emptyList())
+                if (isNavigating && activeRoute === requestedRoute && settings.showTrafficLights) {
+                    lights = fetched
+                    updateLightsOnRoute(state)
+                }
+            }
         }
+        updateLightsOnRoute(state)
+    }
+
+    private fun updateLightsOnRoute(state: TrackerState) {
+        val activeTracker = tracker ?: return
+        val ahead = activeTracker.lightsAheadOnRoute(lights.map { it.id to it.point }, state.distanceAlong, 2500.0)
+        val markers = ahead.take(8).map { (id, point, distance) -> LightMarker(id, point, distance) }
         mapController.showLights(style, markers)
-        aheadList.firstOrNull()?.let { nearest ->
-            nearestLightForecast = nearest.forecast
-            nearestLightDistance = nearest.distanceMeters
-            nearestLightId = nearest.id
-            showLightCard(nearest.forecast, nearest.distanceMeters)
-        } ?: lightCard.hide()
-
-        announcer.announce(planner.onLights(aheadList, speedKmh, System.currentTimeMillis(), secondsOfDay))
-        if (route.steps.isEmpty()) lightCard.hide()
+        val nearest = ahead.firstOrNull()
+        if (nearest == null) {
+            lightCard.hide()
+        } else {
+            showLightCard(nearest.third)
+        }
     }
 
-    private fun showLightCard(forecast: LightForecast, distanceMeters: Double) {
+    private fun showLightCard(distanceMeters: Double) {
+        // موقعیت OSM زنده نیست؛ از نمایش رنگ و شمارش ساختگی جلوگیری می‌کنیم.
         lightCard.show()
-        tvLightState.text = getString(R.string.traffic_light) + " • " + forecast.color.fa
-        tvLightCountdown.text = getString(
-            R.string.light_countdown,
-            PersianText.toPersianDigits(forecast.remainingSec.toString())
-        )
+        tvLightState.text = getString(R.string.traffic_light) + " • " + getString(R.string.light_unknown)
+        tvLightCountdown.text = getString(R.string.light_obey_signal)
         tvLightDistance.text = PersianText.formatDistance(distanceMeters)
-        highlightLamp(forecast.color)
-    }
-
-    private fun highlightLamp(color: LightColor) {
-        vRed.alpha = if (color == LightColor.RED) 1f else 0.22f
-        vYellow.alpha = if (color == LightColor.YELLOW) 1f else 0.22f
-        vGreen.alpha = if (color == LightColor.GREEN) 1f else 0.22f
+        resetLightVisuals()
     }
 
     private fun resetLightVisuals() {
@@ -954,28 +919,6 @@ class MapActivity : AppCompatActivity() {
                 nowMillis = System.currentTimeMillis()
             )
         )
-    }
-
-    // ---------------------------------------------------------------- تیکر
-    private fun startTicker() {
-        tickerJob?.cancel()
-        tickerJob = lifecycleScope.launch {
-            while (isNavigating) {
-                delay(1000)
-                val forecast = nearestLightForecast ?: continue
-                val light = lights.firstOrNull { it.id == nearestLightId } ?: continue
-                val updated = TrafficLightModel.stateAt(light.timing, secondsOfDay())
-                nearestLightForecast = updated
-                showLightCard(updated, nearestLightDistance)
-                val markers = lights.mapNotNull { candidate ->
-                    val f = TrafficLightModel.stateAt(candidate.timing, secondsOfDay())
-                    val dist = GeoMath.distanceMeters(currentLocation ?: return@mapNotNull null, candidate.point)
-                    if (dist > 2600) null else LightMarker(candidate.id, candidate.point, f.color, f.remainingSec, dist)
-                }
-                mapController.showLights(style, markers)
-                if (forecast.color != updated.color) nearestLightForecast = updated
-            }
-        }
     }
 
     private fun currentSpeedKmh(): Double {
@@ -1144,7 +1087,6 @@ class MapActivity : AppCompatActivity() {
     override fun onDestroy() {
         runCatching { fusedLocationClient.removeLocationUpdates(locationCallback) }
         runCatching { if (isNavigating) stopNavigation(speak = false) }
-        tickerJob?.cancel()
         speechEngine.release()
         mapView.onDestroy()
         super.onDestroy()

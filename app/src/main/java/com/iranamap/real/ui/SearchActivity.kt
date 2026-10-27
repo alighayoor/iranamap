@@ -78,23 +78,24 @@ class SearchActivity : AppCompatActivity() {
 
         btnClear.setOnClickListener {
             etSearch.setText("")
-            adapter.clear()
-            tvHeader.visibility = View.GONE
-            tvEmpty.visibility = View.GONE
             activeCategory = null
             chipGroup.clearCheck()
+            clearResults()
+        }
+        findViewById<ImageButton>(R.id.btnSubmitSearch).setOnClickListener {
+            runTextSearch(etSearch.text.toString())
+            hideKeyboard()
         }
 
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             override fun afterTextChanged(s: Editable?) {
-                val q = s?.toString().orEmpty()
-                if (q.trim().length >= 3) runTextSearch(q) else if (q.isBlank()) {
-                    adapter.clear()
-                    tvHeader.visibility = View.GONE
-                    tvEmpty.visibility = View.GONE
-                }
+                // جست‌وجوی عمومی Nominatim نباید برای هر حرف به صورت autocomplete فراخوانی شود.
+                // همچنین نتیجه‌ی درخواست قبلی پس از ویرایش نباید روی متن جدید نمایش داده شود.
+                activeCategory = null
+                chipGroup.clearCheck()
+                clearResults()
             }
         })
 
@@ -112,9 +113,25 @@ class SearchActivity : AppCompatActivity() {
         if (categoryId != null) {
             Categories.find(categoryId)?.let { loadCategory(it) }
         } else {
+            val initialQuery = intent?.getStringExtra(EXTRA_TITLE).orEmpty().trim()
             etSearch.requestFocus()
-            showKeyboard()
+            if (initialQuery.isNotBlank()) {
+                etSearch.setText(initialQuery)
+                etSearch.setSelection(initialQuery.length)
+                runTextSearch(initialQuery)
+            } else {
+                showKeyboard()
+            }
         }
+    }
+
+    private fun clearResults() {
+        job?.cancel()
+        job = null
+        progress.visibility = View.GONE
+        adapter.clear()
+        tvHeader.visibility = View.GONE
+        tvEmpty.visibility = View.GONE
     }
 
     private fun buildCategoryChips() {
@@ -125,9 +142,7 @@ class SearchActivity : AppCompatActivity() {
                 setOnClickListener {
                     if (isChecked) loadCategory(category) else {
                         activeCategory = null
-                        adapter.clear()
-                        tvHeader.visibility = View.GONE
-                        tvEmpty.visibility = View.GONE
+                        clearResults()
                     }
                 }
             }
@@ -169,8 +184,10 @@ class SearchActivity : AppCompatActivity() {
 
     private fun runTextSearch(query: String) {
         val q = query.trim()
+        activeCategory = null
+        chipGroup.clearCheck()
+        clearResults()
         if (q.length < 2) return
-        job?.cancel()
         job = lifecycleScope.launch {
             progress.visibility = View.VISIBLE
             tvEmpty.visibility = View.GONE

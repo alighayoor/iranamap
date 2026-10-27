@@ -85,7 +85,9 @@ jobs:
         run: python3 tools/validate_project.py
 
       - name: آزمون‌های واحد
-        run: ./gradlew --no-daemon testDebugUnitTest
+        run: |
+          ./gradlew --no-daemon testDebugUnitTest
+          python3 scripts/summarize_unit_tests.py
 
       - name: ساخت APK
         env:
