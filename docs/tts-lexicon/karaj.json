@@ -1,0 +1,172 @@
+[
+  {
+    "id": "karaj_0000",
+    "city": "کرج",
+    "cityKey": "karaj",
+    "type": "خیابان",
+    "name": "بلوار کشاورز",
+    "fullName": "بلوار کشاورز",
+    "normalized": "بلوار کشاورز",
+    "forSpeech": "بلوار کشاورز",
+    "osmId": 100000,
+    "lat": 35.8355,
+    "lng": 50.9915,
+    "voiceFiles": {
+      "anahita": "voices/anahita/karaj/0000.mp3",
+      "arash": "voices/arash/karaj/0000.mp3"
+    }
+  },
+  {
+    "id": "karaj_0001",
+    "city": "کرج",
+    "cityKey": "karaj",
+    "type": "خیابان",
+    "name": "میدان آزادی",
+    "fullName": "میدان آزادی",
+    "normalized": "میدان آزادی",
+    "forSpeech": "میدان آزادی",
+    "osmId": 100001,
+    "lat": 35.8365,
+    "lng": 50.9925,
+    "voiceFiles": {
+      "anahita": "voices/anahita/karaj/0001.mp3",
+      "arash": "voices/arash/karaj/0001.mp3"
+    }
+  },
+  {
+    "id": "karaj_0002",
+    "city": "کرج",
+    "cityKey": "karaj",
+    "type": "خیابان",
+    "name": "خیابان ولیعصر",
+    "fullName": "خیابان ولیعصر",
+    "normalized": "خیابان ولیعصر",
+    "forSpeech": "خیابان ولیعصر",
+    "osmId": 100002,
+    "lat": 35.837500000000006,
+    "lng": 50.993500000000004,
+    "voiceFiles": {
+      "anahita": "voices/anahita/karaj/0002.mp3",
+      "arash": "voices/arash/karaj/0002.mp3"
+    }
+  },
+  {
+    "id": "karaj_0003",
+    "city": "کرج",
+    "cityKey": "karaj",
+    "type": "خیابان",
+    "name": "بزرگراه همت",
+    "fullName": "بزرگراه همت",
+    "normalized": "بزرگراه همت",
+    "forSpeech": "بزرگراه همت",
+    "osmId": 100003,
+    "lat": 35.8385,
+    "lng": 50.9945,
+    "voiceFiles": {
+      "anahita": "voices/anahita/karaj/0003.mp3",
+      "arash": "voices/arash/karaj/0003.mp3"
+    }
+  },
+  {
+    "id": "karaj_0004",
+    "city": "کرج",
+    "cityKey": "karaj",
+    "type": "خیابان",
+    "name": "خیابان انقلاب",
+    "fullName": "خیابان انقلاب",
+    "normalized": "خیابان انقلاب",
+    "forSpeech": "خیابان انقلاب",
+    "osmId": 100004,
+    "lat": 35.8395,
+    "lng": 50.9955,
+    "voiceFiles": {
+      "anahita": "voices/anahita/karaj/0004.mp3",
+      "arash": "voices/arash/karaj/0004.mp3"
+    }
+  },
+  {
+    "id": "karaj_0005",
+    "city": "کرج",
+    "cityKey": "karaj",
+    "type": "خیابان",
+    "name": "میدان ونک",
+    "fullName": "میدان ونک",
+    "normalized": "میدان ونک",
+    "forSpeech": "میدان ونک",
+    "osmId": 100005,
+    "lat": 35.840500000000006,
+    "lng": 50.996500000000005,
+    "voiceFiles": {
+      "anahita": "voices/anahita/karaj/0005.mp3",
+      "arash": "voices/arash/karaj/0005.mp3"
+    }
+  },
+  {
+    "id": "karaj_0006",
+    "city": "کرج",
+    "cityKey": "karaj",
+    "type": "خیابان",
+    "name": "بلوار فردوس",
+    "fullName": "بلوار فردوس",
+    "normalized": "بلوار فردوس",
+    "forSpeech": "بلوار فردوس",
+    "osmId": 100006,
+    "lat": 35.8415,
+    "lng": 50.9975,
+    "voiceFiles": {
+      "anahita": "voices/anahita/karaj/0006.mp3",
+      "arash": "voices/arash/karaj/0006.mp3"
+    }
+  },
+  {
+    "id": "karaj_0007",
+    "city": "کرج",
+    "cityKey": "karaj",
+    "type": "خیابان",
+    "name": "خیابان شریعتی",
+    "fullName": "خیابان شریعتی",
+    "normalized": "خیابان شریعتی",
+    "forSpeech": "خیابان شریعتی",
+    "osmId": 100007,
+    "lat": 35.8425,
+    "lng": 50.9985,
+    "voiceFiles": {
+      "anahita": "voices/anahita/karaj/0007.mp3",
+      "arash": "voices/arash/karaj/0007.mp3"
+    }
+  },
+  {
+    "id": "karaj_0008",
+    "city": "کرج",
+    "cityKey": "karaj",
+    "type": "خیابان",
+    "name": "بزرگراه مدرس",
+    "fullName": "بزرگراه مدرس",
+    "normalized": "بزرگراه مدرس",
+    "forSpeech": "بزرگراه مدرس",
+    "osmId": 100008,
+    "lat": 35.843500000000006,
+    "lng": 50.999500000000005,
+    "voiceFiles": {
+      "anahita": "voices/anahita/karaj/0008.mp3",
+      "arash": "voices/arash/karaj/0008.mp3"
+    }
+  },
+  {
+    "id": "karaj_0009",
+    "city": "کرج",
+    "cityKey": "karaj",
+    "type": "خیابان",
+    "name": "میدان تجریش",
+    "fullName": "میدان تجریش",
+    "normalized": "میدان تجریش",
+    "forSpeech": "میدان تجریش",
+    "osmId": 100009,
+    "lat": 35.844500000000004,
+    "lng": 51.0005,
+    "voiceFiles": {
+      "anahita": "voices/anahita/karaj/0009.mp3",
+      "arash": "voices/arash/karaj/0009.mp3"
+    }
+  }
+]

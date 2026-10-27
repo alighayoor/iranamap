@@ -1,0 +1,53 @@
+[
+  {
+    "id": "isfahan_0000",
+    "city": "اصفهان",
+    "cityKey": "isfahan",
+    "type": "خیابان",
+    "name": "خیابان چهارباغ",
+    "fullName": "خیابان چهارباغ",
+    "normalized": "خیابان چهارباغ",
+    "forSpeech": "خیابان چهارباغ",
+    "osmId": 100000,
+    "lat": 32.6546,
+    "lng": 51.668,
+    "voiceFiles": {
+      "anahita": "voices/anahita/isfahan/0000.mp3",
+      "arash": "voices/arash/isfahan/0000.mp3"
+    }
+  },
+  {
+    "id": "isfahan_0001",
+    "city": "اصفهان",
+    "cityKey": "isfahan",
+    "type": "خیابان",
+    "name": "میدان نقش جهان",
+    "fullName": "میدان نقش جهان",
+    "normalized": "میدان نقش جهان",
+    "forSpeech": "میدان نقش جهان",
+    "osmId": 100001,
+    "lat": 32.6556,
+    "lng": 51.669,
+    "voiceFiles": {
+      "anahita": "voices/anahita/isfahan/0001.mp3",
+      "arash": "voices/arash/isfahan/0001.mp3"
+    }
+  },
+  {
+    "id": "isfahan_0002",
+    "city": "اصفهان",
+    "cityKey": "isfahan",
+    "type": "خیابان",
+    "name": "بلوار کشاورز اصفهان",
+    "fullName": "بلوار کشاورز اصفهان",
+    "normalized": "بلوار کشاورز اصفهان",
+    "forSpeech": "بلوار کشاورز اصفهان",
+    "osmId": 100002,
+    "lat": 32.656600000000005,
+    "lng": 51.67,
+    "voiceFiles": {
+      "anahita": "voices/anahita/isfahan/0002.mp3",
+      "arash": "voices/arash/isfahan/0002.mp3"
+    }
+  }
+]

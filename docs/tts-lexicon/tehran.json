@@ -1,0 +1,172 @@
+[
+  {
+    "id": "tehran_0000",
+    "city": "تهران",
+    "cityKey": "tehran",
+    "type": "خیابان",
+    "name": "بلوار کشاورز",
+    "fullName": "بلوار کشاورز",
+    "normalized": "بلوار کشاورز",
+    "forSpeech": "بلوار کشاورز",
+    "osmId": 100000,
+    "lat": 35.6892,
+    "lng": 51.389,
+    "voiceFiles": {
+      "anahita": "voices/anahita/tehran/0000.mp3",
+      "arash": "voices/arash/tehran/0000.mp3"
+    }
+  },
+  {
+    "id": "tehran_0001",
+    "city": "تهران",
+    "cityKey": "tehran",
+    "type": "خیابان",
+    "name": "میدان آزادی",
+    "fullName": "میدان آزادی",
+    "normalized": "میدان آزادی",
+    "forSpeech": "میدان آزادی",
+    "osmId": 100001,
+    "lat": 35.6902,
+    "lng": 51.39,
+    "voiceFiles": {
+      "anahita": "voices/anahita/tehran/0001.mp3",
+      "arash": "voices/arash/tehran/0001.mp3"
+    }
+  },
+  {
+    "id": "tehran_0002",
+    "city": "تهران",
+    "cityKey": "tehran",
+    "type": "خیابان",
+    "name": "خیابان ولیعصر",
+    "fullName": "خیابان ولیعصر",
+    "normalized": "خیابان ولیعصر",
+    "forSpeech": "خیابان ولیعصر",
+    "osmId": 100002,
+    "lat": 35.6912,
+    "lng": 51.391000000000005,
+    "voiceFiles": {
+      "anahita": "voices/anahita/tehran/0002.mp3",
+      "arash": "voices/arash/tehran/0002.mp3"
+    }
+  },
+  {
+    "id": "tehran_0003",
+    "city": "تهران",
+    "cityKey": "tehran",
+    "type": "خیابان",
+    "name": "بزرگراه همت",
+    "fullName": "بزرگراه همت",
+    "normalized": "بزرگراه همت",
+    "forSpeech": "بزرگراه همت",
+    "osmId": 100003,
+    "lat": 35.6922,
+    "lng": 51.392,
+    "voiceFiles": {
+      "anahita": "voices/anahita/tehran/0003.mp3",
+      "arash": "voices/arash/tehran/0003.mp3"
+    }
+  },
+  {
+    "id": "tehran_0004",
+    "city": "تهران",
+    "cityKey": "tehran",
+    "type": "خیابان",
+    "name": "خیابان انقلاب",
+    "fullName": "خیابان انقلاب",
+    "normalized": "خیابان انقلاب",
+    "forSpeech": "خیابان انقلاب",
+    "osmId": 100004,
+    "lat": 35.6932,
+    "lng": 51.393,
+    "voiceFiles": {
+      "anahita": "voices/anahita/tehran/0004.mp3",
+      "arash": "voices/arash/tehran/0004.mp3"
+    }
+  },
+  {
+    "id": "tehran_0005",
+    "city": "تهران",
+    "cityKey": "tehran",
+    "type": "خیابان",
+    "name": "میدان ونک",
+    "fullName": "میدان ونک",
+    "normalized": "میدان ونک",
+    "forSpeech": "میدان ونک",
+    "osmId": 100005,
+    "lat": 35.6942,
+    "lng": 51.394000000000005,
+    "voiceFiles": {
+      "anahita": "voices/anahita/tehran/0005.mp3",
+      "arash": "voices/arash/tehran/0005.mp3"
+    }
+  },
+  {
+    "id": "tehran_0006",
+    "city": "تهران",
+    "cityKey": "tehran",
+    "type": "خیابان",
+    "name": "بلوار فردوس",
+    "fullName": "بلوار فردوس",
+    "normalized": "بلوار فردوس",
+    "forSpeech": "بلوار فردوس",
+    "osmId": 100006,
+    "lat": 35.6952,
+    "lng": 51.395,
+    "voiceFiles": {
+      "anahita": "voices/anahita/tehran/0006.mp3",
+      "arash": "voices/arash/tehran/0006.mp3"
+    }
+  },
+  {
+    "id": "tehran_0007",
+    "city": "تهران",
+    "cityKey": "tehran",
+    "type": "خیابان",
+    "name": "خیابان شریعتی",
+    "fullName": "خیابان شریعتی",
+    "normalized": "خیابان شریعتی",
+    "forSpeech": "خیابان شریعتی",
+    "osmId": 100007,
+    "lat": 35.6962,
+    "lng": 51.396,
+    "voiceFiles": {
+      "anahita": "voices/anahita/tehran/0007.mp3",
+      "arash": "voices/arash/tehran/0007.mp3"
+    }
+  },
+  {
+    "id": "tehran_0008",
+    "city": "تهران",
+    "cityKey": "tehran",
+    "type": "خیابان",
+    "name": "بزرگراه مدرس",
+    "fullName": "بزرگراه مدرس",
+    "normalized": "بزرگراه مدرس",
+    "forSpeech": "بزرگراه مدرس",
+    "osmId": 100008,
+    "lat": 35.6972,
+    "lng": 51.397000000000006,
+    "voiceFiles": {
+      "anahita": "voices/anahita/tehran/0008.mp3",
+      "arash": "voices/arash/tehran/0008.mp3"
+    }
+  },
+  {
+    "id": "tehran_0009",
+    "city": "تهران",
+    "cityKey": "tehran",
+    "type": "خیابان",
+    "name": "میدان تجریش",
+    "fullName": "میدان تجریش",
+    "normalized": "میدان تجریش",
+    "forSpeech": "میدان تجریش",
+    "osmId": 100009,
+    "lat": 35.6982,
+    "lng": 51.398,
+    "voiceFiles": {
+      "anahita": "voices/anahita/tehran/0009.mp3",
+      "arash": "voices/arash/tehran/0009.mp3"
+    }
+  }
+]

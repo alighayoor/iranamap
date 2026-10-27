@@ -1,0 +1,172 @@
+[
+  {
+    "id": "mashhad_0000",
+    "city": "مشهد",
+    "cityKey": "mashhad",
+    "type": "خیابان",
+    "name": "بلوار کشاورز",
+    "fullName": "بلوار کشاورز",
+    "normalized": "بلوار کشاورز",
+    "forSpeech": "بلوار کشاورز",
+    "osmId": 100000,
+    "lat": 36.297,
+    "lng": 59.6062,
+    "voiceFiles": {
+      "anahita": "voices/anahita/mashhad/0000.mp3",
+      "arash": "voices/arash/mashhad/0000.mp3"
+    }
+  },
+  {
+    "id": "mashhad_0001",
+    "city": "مشهد",
+    "cityKey": "mashhad",
+    "type": "خیابان",
+    "name": "میدان آزادی",
+    "fullName": "میدان آزادی",
+    "normalized": "میدان آزادی",
+    "forSpeech": "میدان آزادی",
+    "osmId": 100001,
+    "lat": 36.297999999999995,
+    "lng": 59.6072,
+    "voiceFiles": {
+      "anahita": "voices/anahita/mashhad/0001.mp3",
+      "arash": "voices/arash/mashhad/0001.mp3"
+    }
+  },
+  {
+    "id": "mashhad_0002",
+    "city": "مشهد",
+    "cityKey": "mashhad",
+    "type": "خیابان",
+    "name": "خیابان ولیعصر",
+    "fullName": "خیابان ولیعصر",
+    "normalized": "خیابان ولیعصر",
+    "forSpeech": "خیابان ولیعصر",
+    "osmId": 100002,
+    "lat": 36.299,
+    "lng": 59.608200000000004,
+    "voiceFiles": {
+      "anahita": "voices/anahita/mashhad/0002.mp3",
+      "arash": "voices/arash/mashhad/0002.mp3"
+    }
+  },
+  {
+    "id": "mashhad_0003",
+    "city": "مشهد",
+    "cityKey": "mashhad",
+    "type": "خیابان",
+    "name": "بزرگراه همت",
+    "fullName": "بزرگراه همت",
+    "normalized": "بزرگراه همت",
+    "forSpeech": "بزرگراه همت",
+    "osmId": 100003,
+    "lat": 36.3,
+    "lng": 59.6092,
+    "voiceFiles": {
+      "anahita": "voices/anahita/mashhad/0003.mp3",
+      "arash": "voices/arash/mashhad/0003.mp3"
+    }
+  },
+  {
+    "id": "mashhad_0004",
+    "city": "مشهد",
+    "cityKey": "mashhad",
+    "type": "خیابان",
+    "name": "خیابان انقلاب",
+    "fullName": "خیابان انقلاب",
+    "normalized": "خیابان انقلاب",
+    "forSpeech": "خیابان انقلاب",
+    "osmId": 100004,
+    "lat": 36.300999999999995,
+    "lng": 59.6102,
+    "voiceFiles": {
+      "anahita": "voices/anahita/mashhad/0004.mp3",
+      "arash": "voices/arash/mashhad/0004.mp3"
+    }
+  },
+  {
+    "id": "mashhad_0005",
+    "city": "مشهد",
+    "cityKey": "mashhad",
+    "type": "خیابان",
+    "name": "میدان ونک",
+    "fullName": "میدان ونک",
+    "normalized": "میدان ونک",
+    "forSpeech": "میدان ونک",
+    "osmId": 100005,
+    "lat": 36.302,
+    "lng": 59.611200000000004,
+    "voiceFiles": {
+      "anahita": "voices/anahita/mashhad/0005.mp3",
+      "arash": "voices/arash/mashhad/0005.mp3"
+    }
+  },
+  {
+    "id": "mashhad_0006",
+    "city": "مشهد",
+    "cityKey": "mashhad",
+    "type": "خیابان",
+    "name": "بلوار فردوس",
+    "fullName": "بلوار فردوس",
+    "normalized": "بلوار فردوس",
+    "forSpeech": "بلوار فردوس",
+    "osmId": 100006,
+    "lat": 36.303,
+    "lng": 59.6122,
+    "voiceFiles": {
+      "anahita": "voices/anahita/mashhad/0006.mp3",
+      "arash": "voices/arash/mashhad/0006.mp3"
+    }
+  },
+  {
+    "id": "mashhad_0007",
+    "city": "مشهد",
+    "cityKey": "mashhad",
+    "type": "خیابان",
+    "name": "خیابان شریعتی",
+    "fullName": "خیابان شریعتی",
+    "normalized": "خیابان شریعتی",
+    "forSpeech": "خیابان شریعتی",
+    "osmId": 100007,
+    "lat": 36.303999999999995,
+    "lng": 59.6132,
+    "voiceFiles": {
+      "anahita": "voices/anahita/mashhad/0007.mp3",
+      "arash": "voices/arash/mashhad/0007.mp3"
+    }
+  },
+  {
+    "id": "mashhad_0008",
+    "city": "مشهد",
+    "cityKey": "mashhad",
+    "type": "خیابان",
+    "name": "بزرگراه مدرس",
+    "fullName": "بزرگراه مدرس",
+    "normalized": "بزرگراه مدرس",
+    "forSpeech": "بزرگراه مدرس",
+    "osmId": 100008,
+    "lat": 36.305,
+    "lng": 59.614200000000004,
+    "voiceFiles": {
+      "anahita": "voices/anahita/mashhad/0008.mp3",
+      "arash": "voices/arash/mashhad/0008.mp3"
+    }
+  },
+  {
+    "id": "mashhad_0009",
+    "city": "مشهد",
+    "cityKey": "mashhad",
+    "type": "خیابان",
+    "name": "میدان تجریش",
+    "fullName": "میدان تجریش",
+    "normalized": "میدان تجریش",
+    "forSpeech": "میدان تجریش",
+    "osmId": 100009,
+    "lat": 36.306,
+    "lng": 59.6152,
+    "voiceFiles": {
+      "anahita": "voices/anahita/mashhad/0009.mp3",
+      "arash": "voices/arash/mashhad/0009.mp3"
+    }
+  }
+]

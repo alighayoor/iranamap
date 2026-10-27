@@ -1,0 +1,87 @@
+[
+  {
+    "id": "shiraz_0000",
+    "city": "شیراز",
+    "cityKey": "shiraz",
+    "type": "خیابان",
+    "name": "بلوار زند",
+    "fullName": "بلوار زند",
+    "normalized": "بلوار زند",
+    "forSpeech": "بلوار زند",
+    "osmId": 100000,
+    "lat": 29.5918,
+    "lng": 52.5836,
+    "voiceFiles": {
+      "anahita": "voices/anahita/shiraz/0000.mp3",
+      "arash": "voices/arash/shiraz/0000.mp3"
+    }
+  },
+  {
+    "id": "shiraz_0001",
+    "city": "شیراز",
+    "cityKey": "shiraz",
+    "type": "خیابان",
+    "name": "میدان نماز",
+    "fullName": "میدان نماز",
+    "normalized": "میدان نماز",
+    "forSpeech": "میدان نماز",
+    "osmId": 100001,
+    "lat": 29.5928,
+    "lng": 52.584599999999995,
+    "voiceFiles": {
+      "anahita": "voices/anahita/shiraz/0001.mp3",
+      "arash": "voices/arash/shiraz/0001.mp3"
+    }
+  },
+  {
+    "id": "shiraz_0002",
+    "city": "شیراز",
+    "cityKey": "shiraz",
+    "type": "خیابان",
+    "name": "خیابان عفیف آباد",
+    "fullName": "خیابان عفیف آباد",
+    "normalized": "خیابان عفیف آباد",
+    "forSpeech": "خیابان عفیف آباد",
+    "osmId": 100002,
+    "lat": 29.593799999999998,
+    "lng": 52.5856,
+    "voiceFiles": {
+      "anahita": "voices/anahita/shiraz/0002.mp3",
+      "arash": "voices/arash/shiraz/0002.mp3"
+    }
+  },
+  {
+    "id": "shiraz_0003",
+    "city": "شیراز",
+    "cityKey": "shiraz",
+    "type": "خیابان",
+    "name": "بلوار چمران",
+    "fullName": "بلوار چمران",
+    "normalized": "بلوار چمران",
+    "forSpeech": "بلوار چمران",
+    "osmId": 100003,
+    "lat": 29.5948,
+    "lng": 52.5866,
+    "voiceFiles": {
+      "anahita": "voices/anahita/shiraz/0003.mp3",
+      "arash": "voices/arash/shiraz/0003.mp3"
+    }
+  },
+  {
+    "id": "shiraz_0004",
+    "city": "شیراز",
+    "cityKey": "shiraz",
+    "type": "خیابان",
+    "name": "میدان گاز",
+    "fullName": "میدان گاز",
+    "normalized": "میدان گاز",
+    "forSpeech": "میدان گاز",
+    "osmId": 100004,
+    "lat": 29.5958,
+    "lng": 52.587599999999995,
+    "voiceFiles": {
+      "anahita": "voices/anahita/shiraz/0004.mp3",
+      "arash": "voices/arash/shiraz/0004.mp3"
+    }
+  }
+]

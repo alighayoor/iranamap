@@ -1,0 +1,32 @@
+{
+  "tehran": {
+    "name": "تهران",
+    "file": "tehran.json",
+    "count": 10
+  },
+  "mashhad": {
+    "name": "مشهد",
+    "file": "mashhad.json",
+    "count": 10
+  },
+  "isfahan": {
+    "name": "اصفهان",
+    "file": "isfahan.json",
+    "count": 3
+  },
+  "shiraz": {
+    "name": "شیراز",
+    "file": "shiraz.json",
+    "count": 5
+  },
+  "tabriz": {
+    "name": "تبریز",
+    "file": "tabriz.json",
+    "count": 10
+  },
+  "karaj": {
+    "name": "کرج",
+    "file": "karaj.json",
+    "count": 10
+  }
+}
