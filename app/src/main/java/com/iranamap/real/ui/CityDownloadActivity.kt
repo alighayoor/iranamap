@@ -3,6 +3,7 @@ package com.iranamap.real.ui
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -39,6 +40,8 @@ class CityDownloadActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_city)
+        findViewById<TextView>(R.id.tvOfflinePolicyNotice).visibility =
+            if (OfflineRepository.CITY_DOWNLOADS_ENABLED) View.GONE else View.VISIBLE
 
         tvStorage = findViewById(R.id.tvStorageInfo)
         etSearch = findViewById(R.id.etCitySearch)
@@ -119,6 +122,10 @@ class CityDownloadActivity : AppCompatActivity() {
     }
 
     private fun downloadCity(city: City) {
+        if (!OfflineRepository.CITY_DOWNLOADS_ENABLED) {
+            toast(getString(R.string.offline_download_paused))
+            return
+        }
         if (activeDownloads.contains(city.id)) return
         val plan = OfflinePlanner.planForCity(city)
         if (plan.totalBytes > 400L * 1024 * 1024) {

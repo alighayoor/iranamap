@@ -45,6 +45,15 @@
         android:textColor="@color/text_secondary_dark"
         android:textSize="12sp" />
 
+    <TextView
+        android:id="@+id/tvOfflinePolicyNotice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_s"
+        android:text="@string/offline_download_paused"
+        android:textColor="@color/text_primary_dark"
+        android:textSize="12sp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCities"
         android:layout_width="match_parent"

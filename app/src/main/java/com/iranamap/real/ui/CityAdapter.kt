@@ -12,6 +12,7 @@ import com.iranamap.real.R
 import com.iranamap.real.core.City
 import com.iranamap.real.core.OfflinePlanner
 import com.iranamap.real.core.PersianText
+import com.iranamap.real.offline.OfflineRepository
 
 data class CityRow(
     val city: City,
@@ -86,7 +87,7 @@ class CityAdapter(
             }
             progressBar.visibility = if (row.inProgress) View.VISIBLE else View.GONE
             progressBar.progress = row.progress
-            action.isEnabled = !row.inProgress
+            action.isEnabled = !row.inProgress && !row.isDownloaded && OfflineRepository.CITY_DOWNLOADS_ENABLED
             action.text = when {
                 row.inProgress -> PersianText.percent(row.progress)
                 row.isDownloaded -> ctx.getString(R.string.downloaded_city)

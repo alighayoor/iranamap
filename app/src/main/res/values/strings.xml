@@ -162,7 +162,7 @@
 
     <!-- دانلود و نقشه‌ی آفلاین -->
     <string name="offline_maps">نقشه‌های آفلاین</string>
-    <string name="offline_maps_desc">شهرهای ایران را برای استفاده بدون اینترنت دانلود کنید</string>
+    <string name="offline_maps_desc">بسته‌های موجود؛ دانلود جدید موقتاً غیرفعال است</string>
     <string name="download_city">دریافت نقشه‌ی شهر</string>
     <string name="downloading">در حال دریافت…</string>
     <string name="downloaded_city">ذخیره‌شده</string>
@@ -175,7 +175,8 @@
     <string name="delete_region">حذف نقشه‌ی شهر</string>
     <string name="all_provinces">همه‌ی استان‌ها</string>
     <string name="cities_count">%1$s شهر</string>
-    <string name="offline_note">نقشه در قطعات کوچک دریافت می‌شود. تا پایان دانلود در این صفحه بمانید؛ جست‌وجو و مسیریابی به اینترنت نیاز دارند.</string>
+    <string name="offline_note">جست‌وجو و محاسبهٔ مسیر به اینترنت نیاز دارند.</string>
+    <string name="offline_download_paused">دانلود شهرها موقتاً متوقف است تا محدودیت‌های سرویس نقشه بررسی و اعمال شود. بسته‌های قبلی حذف نمی‌شوند.</string>
 
     <!-- تنظیمات -->
     <string name="settings">تنظیمات</string>

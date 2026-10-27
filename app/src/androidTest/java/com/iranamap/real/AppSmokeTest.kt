@@ -15,12 +15,16 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import androidx.recyclerview.widget.RecyclerView
 import com.iranamap.real.core.CameraKind
+import com.iranamap.real.core.City
 import com.iranamap.real.core.GeoPoint
 import com.iranamap.real.data.SpeedCamera
 import com.iranamap.real.data.CameraRepository
 import com.iranamap.real.data.OverpassApi
 import com.iranamap.real.data.OverpassResponse
 import com.iranamap.real.settings.AppSettings
+import com.iranamap.real.map.MapController
+import com.iranamap.real.offline.OfflineRepository
+import kotlinx.coroutines.runBlocking
 import com.iranamap.real.data.OsrmApi
 import com.iranamap.real.data.OsrmGeometry
 import com.iranamap.real.data.OsrmLeg
@@ -238,8 +242,27 @@ class AppSmokeTest {
                 activity.findViewById<EditText>(R.id.etCitySearch).setText("شیراز")
                 val list = activity.findViewById<RecyclerView>(R.id.rvCities)
                 assertTrue("City search should contain Shiraz", (list.adapter?.itemCount ?: 0) > 0)
+                val notice = activity.findViewById<TextView>(R.id.tvOfflinePolicyNotice)
+                assertEquals(View.VISIBLE, notice.visibility)
+                assertTrue(notice.text.toString().contains("موقتاً"))
                 assertFalse(activity.isFinishing)
             }
+        }
+    }
+
+    @Test
+    fun pausedOfflineDownloadDoesNotCreateARegion() {
+        val context = ApplicationProvider.getApplicationContext<android.content.Context>()
+        val repo = OfflineRepository(context)
+        val probe = City("qa_policy_probe", "آزمایشی", "فارس", origin.lat, origin.lng, 0.1)
+        runBlocking {
+            val before = repo.listRegions().map { it.regionId }.toSet()
+            val result = repo.downloadCity(probe, MapController.STYLE_DARK) {
+                throw AssertionError("A paused download must not report network progress")
+            }
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull()!!.message!!.contains("موقتاً"))
+            assertEquals(before, repo.listRegions().map { it.regionId }.toSet())
         }
     }
 

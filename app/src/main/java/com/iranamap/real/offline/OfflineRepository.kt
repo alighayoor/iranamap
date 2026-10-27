@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.iranamap.real.R
 import com.iranamap.real.core.City
 import com.iranamap.real.core.CityCatalog
 import com.iranamap.real.core.OfflinePlanner
@@ -50,6 +51,11 @@ private data class PackMetadata(val cityId: String, val zoom: Int, val chunk: In
  * سقف‌ها برآورد داخلی هستند، نه تضمین انطباق با سیاست منبع یا حجم واقعی.
  */
 class OfflineRepository(private val context: Context) {
+
+    companion object {
+        // بازگشایی تنها پس از اعمال و آزمودن محدودیت‌های منبع نقشه.
+        const val CITY_DOWNLOADS_ENABLED = false
+    }
 
     private val tag = "OfflineRepo"
     private val gson = Gson()
@@ -118,6 +124,9 @@ class OfflineRepository(private val context: Context) {
         styleUrl: String,
         onProgress: (DownloadProgress) -> Unit
     ): Result<Unit> = withContext(Dispatchers.Main) {
+        if (!CITY_DOWNLOADS_ENABLED) {
+            return@withContext Result.failure(IllegalStateException(context.getString(R.string.offline_download_paused)))
+        }
         val plan = OfflinePlanner.planForCity(city)
         if (plan.packs.isEmpty()) return@withContext Result.failure(IllegalStateException("برنامه‌ی دانلود خالی است"))
         var completedBytes = 0L
