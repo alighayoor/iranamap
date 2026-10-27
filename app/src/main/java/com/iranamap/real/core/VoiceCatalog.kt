@@ -92,31 +92,6 @@ object VoiceCatalog {
             sizeBytes = 67_180_373L,
             bundled = false,
             quality = "بالا"
-        ),
-        // صدای پایه استودیویی - آرش و آناهیتا (از پیش ضبط‌شده + fallback شیرپا)
-        VoiceModel(
-            id = "arash",
-            displayName = "آرش",
-            gender = "male",
-            description = "صدای مردانه‌ی آرش - استودیویی، 51 عبارت پایه + نام خیابان‌ها",
-            folder = "voices/arash/base",
-            modelFile = "lexicon",
-            downloadUrl = "",
-            sizeBytes = 8_000_000L,
-            bundled = false,
-            quality = "استودیویی"
-        ),
-        VoiceModel(
-            id = "anahita",
-            displayName = "آناهیتا",
-            gender = "female",
-            description = "صدای زنانه‌ی آناهیتا - استودیویی، 51 عبارت پایه + 14k خیابان شیراز",
-            folder = "voices/anahita/base",
-            modelFile = "lexicon",
-            downloadUrl = "",
-            sizeBytes = 12_000_000L,
-            bundled = false,
-            quality = "استودیویی"
         )
     )
 
