@@ -301,6 +301,8 @@ class MapActivity : AppCompatActivity() {
     private fun loadStyle(kind: MapStyleKind) {
         val mapRef = map ?: return
         lastStyleApplied = kind
+        // استایل قبلی پس از آغاز بارگذاری دیگر قابل استفاده نیست.
+        style = null
         val dark = kind != MapStyleKind.LIGHT
         // تشخیص حالت کم‌مصرف برای Redmi 10C - سه‌بعدی سبک
         val isLite = try { com.iranamap.real.util.DevicePerformance.isLiteMode(this) } catch (_: Exception) { false }
@@ -738,10 +740,13 @@ class MapActivity : AppCompatActivity() {
         navPanel.hide()
         speedCard.hide()
         lightCard.hide()
-        mapController.clearRoute(style)
-        mapController.clearAlternativeRoutes(style)
-        mapController.showDestination(style, null)
-        mapController.showLights(style, emptyList())
+        runCatching {
+            mapController.clearRoute(style)
+            mapController.clearAlternativeRoutes(style)
+            mapController.showDestination(style, null)
+            mapController.showLights(style, emptyList())
+            mapController.showCameras(style, emptyList())
+        }.onFailure { android.util.Log.w("IranAmapRoute", "پاک‌کردن لایه‌های نقشه ناموفق بود", it) }
     }
 
     // ---------------------------------------------------------------- موقعیت

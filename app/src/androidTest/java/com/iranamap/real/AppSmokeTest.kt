@@ -22,6 +22,7 @@ import com.iranamap.real.data.OsrmStep
 import com.iranamap.real.data.RouteRepository
 import com.iranamap.real.ui.CityDownloadActivity
 import com.iranamap.real.ui.SearchActivity
+import com.iranamap.real.ui.SettingsActivity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -95,6 +96,21 @@ class AppSmokeTest {
                 assertEquals("", text.text.toString())
                 assertEquals(View.GONE, activity.findViewById<View>(R.id.progress).visibility)
                 assertFalse(activity.isFinishing)
+            }
+        }
+    }
+
+    @Test
+    fun settingsDoNotOfferUnverifiedLiveTrafficLightAnnouncements() {
+        ActivityScenario.launch(SettingsActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val option = activity.findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.swLights)
+                assertFalse(option.isEnabled)
+                assertFalse(option.isChecked)
+                assertTrue(option.text.toString().contains("دادهٔ زنده"))
+                val traffic = activity.findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.swTraffic)
+                assertFalse(traffic.isEnabled)
+                assertFalse(traffic.isChecked)
             }
         }
     }

@@ -48,9 +48,12 @@ class SettingsActivity : AppCompatActivity() {
         tvAbout = findViewById(R.id.tvAbout)
         swStreet = findViewById(R.id.swStreetNames)
         swLights = findViewById(R.id.swLights)
+        // داده‌ی زنده‌ی چراغ موجود نیست؛ سوئیچ غیرفعال است تا وعده‌ی عملکرد ندهد.
+        swLights.isEnabled = false
         swSpeed = findViewById(R.id.swSpeedWarn)
         swArrival = findViewById(R.id.swArrival)
         swTraffic = findViewById(R.id.swTraffic)
+        swTraffic.isEnabled = false // سرویس ترافیک زنده و اعلام آن هنوز متصل نیست.
         sw3d = findViewById(R.id.sw3d)
         swShowLights = findViewById(R.id.swShowLights)
         swShowCameras = findViewById(R.id.swShowCameras)
@@ -100,10 +103,10 @@ class SettingsActivity : AppCompatActivity() {
         val voice = VoiceCatalog.find(s.voiceId) ?: VoiceCatalog.bundled
         tvCurrentVoice.text = "${voice.displayName} (${voice.genderFa})"
         swStreet.isChecked = s.announceStreetNames
-        swLights.isChecked = s.announceLights
+        swLights.isChecked = false
         swSpeed.isChecked = s.announceSpeed
         swArrival.isChecked = s.announceArrival
-        swTraffic.isChecked = s.announceTraffic
+        swTraffic.isChecked = false
         sw3d.isChecked = s.is3d
         swShowLights.isChecked = s.showTrafficLights
         swShowCameras.isChecked = s.showCameras

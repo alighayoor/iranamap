@@ -90,7 +90,7 @@
     <string name="stop_navigation">پایان ناوبری</string>
     <string name="resume_navigation">ادامه‌ی ناوبری</string>
     <string name="clear_route">حذف مسیر</string>
-    <string name="eta">رسیدن</string>
+    <string name="eta">رسیدن تقریبی</string>
     <string name="remaining">باقی‌مانده</string>
     <string name="arrived">به مقصد رسیدید</string>
     <string name="arrived_at_destination">به مقصد رسیدید</string>
@@ -149,10 +149,10 @@
     <string name="speech_engine_missing">موتور صدا آماده نیست</string>
     <string name="speech_offline_note">دستیار صوتی کاملاً آفلاین است و به سرویس گفتار اندروید وابسته نیست.</string>
     <string name="announce_street_names">اعلام نام خیابان</string>
-    <string name="announce_lights">اعلام وضعیت چراغ</string>
+    <string name="announce_lights">اعلام وضعیت چراغ (دادهٔ زنده موجود نیست)</string>
     <string name="announce_speed">هشدار سرعت و دوربین</string>
     <string name="announce_arrival">اعلام رسیدن به مقصد</string>
-    <string name="announce_traffic">اعلام ترافیک و مسیر جایگزین</string>
+    <string name="announce_traffic">اعلام ترافیک زنده (در دسترس نیست)</string>
     <string name="verbosity">میزان توضیح صوتی</string>
     <string name="verbosity_low">کم</string>
     <string name="verbosity_normal">معمولی</string>
