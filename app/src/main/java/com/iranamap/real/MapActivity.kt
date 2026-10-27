@@ -997,7 +997,13 @@ class MapActivity : AppCompatActivity() {
     }
 
     private fun stopForegroundService() {
-        runCatching { stopService(Intent(this, NavigationService::class.java)) }
+        // دستور توقف پس از شروع صف می‌شود؛ stopService فوری می‌توانست سرویس را
+        // پیش از اجرای startForeground متوقف کند و AndroidRuntime را کرش دهد.
+        val intent = Intent(this, NavigationService::class.java).setAction(NavigationService.ACTION_STOP)
+        runCatching { startService(intent) }.onFailure {
+            // اگر سیستم اجازه‌ی ارسال دستور نداد، سرویسِ احتمالی را متوقف کن.
+            runCatching { stopService(Intent(this, NavigationService::class.java)) }
+        }
     }
 
     // ---------------------------------------------------------------- intent

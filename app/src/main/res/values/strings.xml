@@ -168,14 +168,14 @@
     <string name="downloaded_city">ذخیره‌شده</string>
     <string name="download_complete">دریافت کامل شد</string>
     <string name="download_failed">دریافت ناموفق بود</string>
-    <string name="download_progress">%1$s٪ — %2$s از %3$s</string>
+    <string name="download_progress">%1$s٪ — حجم تقریبی %2$s از %3$s</string>
     <string name="download_size">حجم تقریبی: %1$s</string>
     <string name="storage_used">فضای مصرف‌شده: %1$s</string>
     <string name="download_all_warning">این شهر حجم زیادی دارد؛ بهتر است با اتصال وای‌فای دانلود کنید.</string>
     <string name="delete_region">حذف نقشه‌ی شهر</string>
     <string name="all_provinces">همه‌ی استان‌ها</string>
     <string name="cities_count">%1$s شهر</string>
-    <string name="offline_note">هر بسته طبق شرایط استفاده‌ی OpenFreeMap در قطعات کوچک و پشت‌سرهم دریافت می‌شود.</string>
+    <string name="offline_note">نقشه در قطعات کوچک دریافت می‌شود. تا پایان دانلود در این صفحه بمانید؛ جست‌وجو و مسیریابی به اینترنت نیاز دارند.</string>
 
     <!-- تنظیمات -->
     <string name="settings">تنظیمات</string>

@@ -62,6 +62,34 @@ class OfflinePlannerTest {
     }
 
     @Test
+    fun progressTracksPartialPackWithoutRoundingItToZero() {
+        val progress = OfflinePlanner.estimateProgress(
+            packIndex = 1, packCount = 4, completedResources = 5, requiredResources = 10,
+            previousEstimatedBytes = 1000, currentEstimatedBytes = 800
+        )
+        assertEquals(37, progress.percent)
+        assertEquals(1400L, progress.estimatedBytes)
+    }
+
+    @Test
+    fun progressHandlesMissingCountsAndClampsOverrun() {
+        val unknown = OfflinePlanner.estimateProgress(0, 2, 4, 0, 0, 1000)
+        assertEquals(0, unknown.percent)
+        assertEquals(0L, unknown.estimatedBytes)
+        val complete = OfflinePlanner.estimateProgress(1, 2, 20, 10, 1000, 1000)
+        assertEquals(100, complete.percent)
+        assertEquals(2000L, complete.estimatedBytes)
+    }
+
+    @Test
+    fun downloadedCityRequiresEveryPackToBeComplete() {
+        assertTrue(OfflinePlanner.allPacksComplete(3, listOf(2, 0, 1)))
+        assertTrue(!OfflinePlanner.allPacksComplete(3, listOf(0, 1)))
+        assertTrue(!OfflinePlanner.allPacksComplete(3, listOf(0, 1, 1)))
+        assertTrue(!OfflinePlanner.allPacksComplete(0, emptyList()))
+    }
+
+    @Test
     fun humanSummaryIsPersian() {
         val plan = OfflinePlanner.plan(GeoMath.boundsAround(GeoPoint(35.0, 51.0), 5.0), 12, 13)
         val s = OfflinePlanner.humanSummary(plan)

@@ -105,11 +105,15 @@ class CityDownloadActivity : AppCompatActivity() {
     }
 
     private suspend fun loadDownloadedStates() {
-        val regions = repo.listRegions()
-        for (region in regions) {
-            val cityId = region.cityId ?: continue
-            val size = repo.cachedSizeOf(cityId)
-            if (size > 0) downloadedSizes[cityId] = size
+        val regionsByCity = repo.listRegions().filter { it.cityId != null }.groupBy { it.cityId!! }
+        downloadedSizes.clear()
+        for ((cityId, regions) in regionsByCity) {
+            val city = CityCatalog.find(cityId) ?: continue
+            val completed = regions.filter { it.isComplete }
+            val expected = OfflinePlanner.planForCity(city).packCount
+            if (OfflinePlanner.allPacksComplete(expected, completed.map { it.chunk }.toSet())) {
+                downloadedSizes[cityId] = completed.sumOf { it.sizeBytes }
+            }
         }
         refresh()
     }

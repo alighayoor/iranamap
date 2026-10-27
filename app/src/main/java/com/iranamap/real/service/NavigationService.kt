@@ -23,9 +23,17 @@ class NavigationService : Service() {
     override fun onCreate() {
         super.onCreate()
         createChannel()
+        // قبل از پردازش دستورها، تعهد startForegroundService را برآورده کن.
+        // توقف سریع نباید سرویس را پیش از این فراخوانی از بین ببرد.
+        startForeground(NOTIFICATION_ID, buildNotification(getString(R.string.notification_text)))
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP) {
+            stopForeground(true)
+            stopSelf(startId)
+            return START_NOT_STICKY
+        }
         val destination = intent?.getStringExtra(EXTRA_DESTINATION).orEmpty()
         val text = if (destination.isBlank()) {
             getString(R.string.notification_text)
@@ -34,7 +42,7 @@ class NavigationService : Service() {
         }
         val notification = buildNotification(text)
         startForeground(NOTIFICATION_ID, notification)
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     private fun buildNotification(text: String): Notification {
@@ -80,6 +88,7 @@ class NavigationService : Service() {
     }
 
     companion object {
+        const val ACTION_STOP = "com.iranamap.real.action.STOP_NAVIGATION"
         const val EXTRA_DESTINATION = "destination"
         private const val CHANNEL_ID = "iranamap_navigation"
         private const val NOTIFICATION_ID = 1001

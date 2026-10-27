@@ -10,6 +10,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
+import androidx.recyclerview.widget.RecyclerView
 import com.iranamap.real.core.GeoPoint
 import com.iranamap.real.data.OsrmApi
 import com.iranamap.real.data.OsrmGeometry
@@ -19,6 +20,7 @@ import com.iranamap.real.data.OsrmResponse
 import com.iranamap.real.data.OsrmRoute
 import com.iranamap.real.data.OsrmStep
 import com.iranamap.real.data.RouteRepository
+import com.iranamap.real.ui.CityDownloadActivity
 import com.iranamap.real.ui.SearchActivity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -98,6 +100,18 @@ class AppSmokeTest {
     }
 
     @Test
+    fun offlineCityScreenOpensAndFiltersCities() {
+        ActivityScenario.launch(CityDownloadActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                activity.findViewById<EditText>(R.id.etCitySearch).setText("شیراز")
+                val list = activity.findViewById<RecyclerView>(R.id.rvCities)
+                assertTrue("City search should contain Shiraz", (list.adapter?.itemCount ?: 0) > 0)
+                assertFalse(activity.isFinishing)
+            }
+        }
+    }
+
+    @Test
     fun destinationCanBeSetAndClearedBeforeMapOrGpsAreReady() {
         ActivityScenario.launch(MapActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
@@ -150,6 +164,9 @@ class AppSmokeTest {
                 assertEquals(View.GONE, activity.findViewById<View>(R.id.navPanel).visibility)
                 assertNull(getField(activity, "destination"))
             }
+            // Android may report the foreground-service timeout several seconds later.
+            Thread.sleep(6500)
+            scenario.onActivity { assertFalse(it.isFinishing) }
         }
     }
 

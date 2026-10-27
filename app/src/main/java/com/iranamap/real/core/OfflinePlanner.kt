@@ -4,8 +4,8 @@ import kotlin.math.max
 
 /**
  * یک بسته‌ی دانلود آفلاین (منطقه + بازه‌ی زوم).
- * طبق شرایط استفاده‌ی OpenFreeMap هر دانلود حداکثر ۳۰۰۰ کاشی و ۵۰ مگابایت است،
- * بنابراین بسته‌ها کوچک‌تر از این سقف‌ها ساخته می‌شوند.
+ * برای مدیریت حجم، برنامه بسته‌های کوچک می‌سازد. سازگاری با سیاست منبع و
+ * دانلود/نمایش آفلاین باید جداگانه روی دستگاه بررسی شود.
  */
 data class PackSpec(
     val bounds: GeoBounds,
@@ -25,14 +25,41 @@ data class PackPlan(
     val packCount: Int get() = packs.size
 }
 
+/** حجم اینجا تخمینی است؛ حجم واقعی از وضعیت بسته‌ی MapLibre خوانده می‌شود. */
+data class OfflineProgressEstimate(val percent: Int, val estimatedBytes: Long)
+
 object OfflinePlanner {
 
-    /** سقف سخت‌گیرانه‌ی خودمان؛ پایین‌تر از محدودیت رسمی. */
+    /** سقف‌های داخلی تخمینی پروژه؛ تضمین یا بیانگر سیاست رسمی منبع نیستند. */
     const val MAX_TILES_PER_PACK: Int = 1100
     const val MAX_BYTES_PER_PACK: Long = 45L * 1024 * 1024
     const val AVG_TILE_BYTES: Long = 40_000L
 
     fun estimateBytes(tiles: Int): Long = tiles.toLong() * AVG_TILE_BYTES
+
+    /** درصد کلی و حجم تقریبی؛ از تبدیل زودهنگام نسبت اعشاری به عدد صحیح جلوگیری می‌کند. */
+    fun estimateProgress(
+        packIndex: Int,
+        packCount: Int,
+        completedResources: Long,
+        requiredResources: Long,
+        previousEstimatedBytes: Long,
+        currentEstimatedBytes: Long
+    ): OfflineProgressEstimate {
+        val count = packCount.coerceAtLeast(1)
+        val index = packIndex.coerceIn(0, count - 1)
+        val fraction = if (requiredResources > 0) {
+            (completedResources.toDouble() / requiredResources.toDouble()).coerceIn(0.0, 1.0)
+        } else 0.0
+        val percent = (((index + fraction) / count) * 100.0).toInt().coerceIn(0, 100)
+        val bytes = previousEstimatedBytes.coerceAtLeast(0L) +
+            (currentEstimatedBytes.coerceAtLeast(0L) * fraction).toLong()
+        return OfflineProgressEstimate(percent, bytes)
+    }
+
+    /** هر بخش باید کامل باشد؛ صرفِ وجود چند فایل ناقص به معنی دانلود شهر نیست. */
+    fun allPacksComplete(expectedCount: Int, completedIndices: Collection<Int>): Boolean =
+        expectedCount > 0 && (0 until expectedCount).all { it in completedIndices }
 
     fun tileCount(bounds: GeoBounds, zoom: Int): Int = GeoMath.tileCount(bounds, zoom)
 
