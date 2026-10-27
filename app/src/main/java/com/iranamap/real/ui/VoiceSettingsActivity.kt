@@ -13,6 +13,8 @@ import com.iranamap.real.core.PersianText
 import com.iranamap.real.core.VoiceCatalog
 import com.iranamap.real.core.VoiceModel
 import com.iranamap.real.settings.SettingsRepository
+import com.iranamap.real.tts.HybridSpeechEngine
+import com.iranamap.real.tts.LexiconRepository
 import com.iranamap.real.tts.SherpaSpeechEngine
 import com.iranamap.real.tts.VoiceInstaller
 import com.iranamap.real.util.toast
@@ -24,7 +26,9 @@ import kotlinx.coroutines.withContext
 class VoiceSettingsActivity : AppCompatActivity() {
 
     private val repo by lazy { SettingsRepository.get(this) }
-    private val engine by lazy { SherpaSpeechEngine(this) }
+    private val sherpa by lazy { SherpaSpeechEngine(this) }
+    private val lexicon by lazy { LexiconRepository(this) }
+    private val engine by lazy { HybridSpeechEngine(this, sherpa, lexicon) }
     private lateinit var adapter: VoiceAdapter
     private lateinit var seekSpeed: SeekBar
     private lateinit var seekVolume: SeekBar
@@ -88,6 +92,19 @@ class VoiceSettingsActivity : AppCompatActivity() {
     }
 
     private suspend fun loadInstalledVoice(voiceId: String) {
+        (engine as? HybridSpeechEngine)?.setVoice(voiceId)
+        if (voiceId in setOf("arash", "anahita")) {
+            val count = lexicon.availableBaseFor(voiceId).size
+            if (count > 0) {
+                withContext(Dispatchers.IO) { engine.loadVoice(java.io.File("")) }
+                return
+            }
+            // fallback به امیر برای جملات داینامیک
+            val fb = VoiceCatalog.bundled
+            val dir = VoiceInstaller.ensureInstalled(fb).getOrNull() ?: return
+            withContext(Dispatchers.IO) { sherpa.loadVoice(dir); engine.loadVoice(dir) }
+            return
+        }
         val model = VoiceCatalog.find(voiceId) ?: VoiceCatalog.bundled
         val dir = VoiceInstaller.ensureInstalled(model).getOrNull() ?: return
         withContext(Dispatchers.IO) { engine.loadVoice(dir) }
@@ -95,9 +112,13 @@ class VoiceSettingsActivity : AppCompatActivity() {
 
     private fun refreshList() {
         val rows = VoiceCatalog.all.map { model ->
+            val installed = when (model.id) {
+                "arash", "anahita" -> lexicon.availableBaseFor(model.id).isNotEmpty()
+                else -> VoiceInstaller.isInstalled(model)
+            }
             VoiceRow(
                 model = model,
-                installed = VoiceInstaller.isInstalled(model),
+                installed = installed,
                 selected = model.id == selectedVoiceId
             )
         }
@@ -137,9 +158,22 @@ class VoiceSettingsActivity : AppCompatActivity() {
     private fun previewVoice(model: VoiceModel) {
         lifecycleScope.launch {
             toast("در حال آماده‌سازی صدا...")
+            if (model.id in setOf("arash", "anahita")) {
+                val count = lexicon.availableBaseFor(model.id).size
+                if (count == 0) {
+                    toast("${model.displayName} هنوز نصب نشده - ${count} فایل پایه پیدا شد. fallback به امیر")
+                }
+                (engine as? HybridSpeechEngine)?.setVoice(model.id)
+                selectVoice(model)
+                val settings = repo.current()
+                engine.setSpeed(settings.speechRate)
+                engine.setVolume(settings.speechVolume)
+                toast("پخش نمونه: ${model.displayName}")
+                engine.speak(getString(R.string.voice_test_phrase), 90, "preview_${System.currentTimeMillis()}")
+                return@launch
+            }
             val isInstalled = VoiceInstaller.isInstalled(model)
             if (!isInstalled) {
-                // سعی کن صدای همراه (amir) را نصب کنی
                 toast("صدا نصب نشده - در حال نصب ${model.displayName}...")
                 val res = VoiceInstaller.ensureInstalled(model)
                 if (res.isFailure) {
@@ -149,6 +183,7 @@ class VoiceSettingsActivity : AppCompatActivity() {
                 }
             }
             selectVoice(model)
+            (engine as? HybridSpeechEngine)?.setVoice(model.id)
             val loaded = withContext(Dispatchers.IO) {
                 runCatching { engine.loadVoice(VoiceInstaller.modelDir(model)) }.getOrDefault(false)
             }

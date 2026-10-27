@@ -66,6 +66,8 @@ import com.iranamap.real.settings.AppSettings
 import com.iranamap.real.settings.MapStyleKind
 import com.iranamap.real.settings.SettingsRepository
 import com.iranamap.real.tts.Announcer
+import com.iranamap.real.tts.HybridSpeechEngine
+import com.iranamap.real.tts.LexiconRepository
 import com.iranamap.real.tts.SherpaSpeechEngine
 import com.iranamap.real.tts.SpeechEngine
 import com.iranamap.real.tts.VoiceInstaller
@@ -141,7 +143,14 @@ class MapActivity : AppCompatActivity() {
     private val cameraRepo = CameraRepository()
     private val poiRepo = PoiRepository()
     private val mapController by lazy { MapController(this) }
-    private val speechEngine: SpeechEngine by lazy { SherpaSpeechEngine(this) }
+    private val sherpaEngine: SpeechEngine by lazy { SherpaSpeechEngine(this) }
+    private val lexiconRepo by lazy { LexiconRepository(this) }
+    private val speechEngine: SpeechEngine by lazy {
+        HybridSpeechEngine(this, sherpaEngine, lexiconRepo).apply {
+            // صدای پیش‌فرض از تنظیمات
+            lifecycleScope.launch { setVoice(SettingsRepository.get(this@MapActivity).current().voiceId) }
+        }
+    }
     private val announcer by lazy { Announcer(speechEngine) }
     private val planner = SpeechPlanner()
 
@@ -373,12 +382,31 @@ class MapActivity : AppCompatActivity() {
 
     private fun loadVoiceIfNeeded(voiceId: String) {
         lastVoiceId = voiceId
+        // به موتور ترکیبی بگو صدا عوض شد
+        (speechEngine as? HybridSpeechEngine)?.setVoice(voiceId)
         lifecycleScope.launch {
             val model = VoiceCatalog.find(voiceId) ?: VoiceCatalog.bundled
+            // برای آرش/آناهیتا (لکسیکون) نیازی به مدل onnx نیست - فقط fallback شیرپا
+            if (voiceId in setOf("arash", "anahita")) {
+                // اگر فایل‌های لکسیکون حاضرند، مستقیم آماده است
+                val count = lexiconRepo.availableBaseFor(voiceId).size
+                if (count > 0) {
+                    android.util.Log.i("IranAmapTTS", "صدای لکسیکون آماده: $voiceId ($count عبارت پایه)")
+                    withContext(Dispatchers.IO) { runCatching { speechEngine.loadVoice(java.io.File("")) } }
+                    return@launch
+                }
+                // fallback: از مدل امیر برای جملات داینامیک استفاده کن
+                val fallback = VoiceCatalog.bundled
+                val dir = runCatching { VoiceInstaller.ensureInstalled(fallback).getOrNull() }.getOrNull()
+                if (dir != null) {
+                    withContext(Dispatchers.IO) { runCatching { sherpaEngine.loadVoice(dir) } }
+                    android.util.Log.i("IranAmapTTS", "آرش/آناهیتا با fallback امیر آماده شد ($count پایه)")
+                }
+                return@launch
+            }
             val dir = runCatching { VoiceInstaller.ensureInstalled(model).getOrNull() }.getOrNull()
             if (dir == null) {
                 android.util.Log.w("IranAmapTTS", "صدا نصب نشد: $voiceId")
-                // در حالت کم‌رم، پیام ملایم‌تر نمایش بده
                 toast(getString(R.string.speech_engine_missing) + " - در تنظیمات دوباره تلاش کنید")
                 return@launch
             }

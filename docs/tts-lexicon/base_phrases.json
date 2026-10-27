@@ -1,0 +1,318 @@
+[
+  {
+    "id": "route_started",
+    "category": "route",
+    "text": "مسیریابی آغاز شد.",
+    "forSpeech": "مسیریابی آغاز شد. [pause]"
+  },
+  {
+    "id": "route_started_to",
+    "category": "route",
+    "text": "مسیریابی آغاز شد به سمت",
+    "forSpeech": "مسیریابی آغاز شد به سمت [pause]",
+    "hasSlot": "streetName"
+  },
+  {
+    "id": "route_distance_is",
+    "category": "route",
+    "text": "مسافت مسیر",
+    "forSpeech": "مسافت مسیر [pause]",
+    "hasSlot": "distance"
+  },
+  {
+    "id": "route_time_is",
+    "category": "route",
+    "text": "و زمان تقریبی",
+    "forSpeech": "و زمان تقریبی [pause]",
+    "hasSlot": "duration"
+  },
+  {
+    "id": "route_lights_info",
+    "category": "route",
+    "text": "در این مسیر چراغ راهنمایی قرار دارد.",
+    "forSpeech": "در این مسیر [pause] چراغ راهنمایی قرار دارد. [pause]"
+  },
+  {
+    "id": "maneuver_depart",
+    "category": "maneuver",
+    "text": "حرکت کنید",
+    "forSpeech": "حرکت کنید [pause]"
+  },
+  {
+    "id": "maneuver_continue",
+    "category": "maneuver",
+    "text": "به مسیر ادامه دهید",
+    "forSpeech": "به مسیر ادامه دهید [pause]"
+  },
+  {
+    "id": "maneuver_straight",
+    "category": "maneuver",
+    "text": "مستقیم ادامه دهید",
+    "forSpeech": "مستقیم ادامه دهید [pause]"
+  },
+  {
+    "id": "maneuver_turn_left",
+    "category": "maneuver",
+    "text": "به چپ بپیچید",
+    "forSpeech": "به چپ بپیچید [pause]"
+  },
+  {
+    "id": "maneuver_turn_right",
+    "category": "maneuver",
+    "text": "به راست بپیچید",
+    "forSpeech": "به راست بپیچید [pause]"
+  },
+  {
+    "id": "maneuver_slight_left",
+    "category": "maneuver",
+    "text": "کمی به چپ متمایل شوید",
+    "forSpeech": "کمی به چپ متمایل شوید [pause]"
+  },
+  {
+    "id": "maneuver_slight_right",
+    "category": "maneuver",
+    "text": "کمی به راست متمایل شوید",
+    "forSpeech": "کمی به راست متمایل شوید [pause]"
+  },
+  {
+    "id": "maneuver_sharp_left",
+    "category": "maneuver",
+    "text": "به‌شدت به چپ بپیچید",
+    "forSpeech": "به‌شدت به چپ بپیچید [pause]"
+  },
+  {
+    "id": "maneuver_sharp_right",
+    "category": "maneuver",
+    "text": "به‌شدت به راست بپیچید",
+    "forSpeech": "به‌شدت به راست بپیچید [pause]"
+  },
+  {
+    "id": "maneuver_uturn",
+    "category": "maneuver",
+    "text": "دور بزنید و برگردید",
+    "forSpeech": "دور بزنید و برگردید [pause]"
+  },
+  {
+    "id": "maneuver_roundabout_enter",
+    "category": "maneuver",
+    "text": "وارد میدان شوید",
+    "forSpeech": "وارد میدان شوید [pause]"
+  },
+  {
+    "id": "maneuver_roundabout_exit_generic",
+    "category": "maneuver",
+    "text": "از میدان به خروجی بروید",
+    "forSpeech": "از میدان به خروجی [pause]",
+    "hasSlot": "ordinal"
+  },
+  {
+    "id": "maneuver_merge",
+    "category": "maneuver",
+    "text": "با مسیر اصلی ادغام شوید",
+    "forSpeech": "با مسیر اصلی ادغام شوید [pause]"
+  },
+  {
+    "id": "maneuver_ramp",
+    "category": "maneuver",
+    "text": "وارد بزرگراه شوید",
+    "forSpeech": "وارد بزرگراه شوید [pause]"
+  },
+  {
+    "id": "maneuver_exit",
+    "category": "maneuver",
+    "text": "از بزرگراه خارج شوید",
+    "forSpeech": "از بزرگراه خارج شوید [pause]"
+  },
+  {
+    "id": "maneuver_fork_left",
+    "category": "maneuver",
+    "text": "از شاخه‌ی چپ ادامه دهید",
+    "forSpeech": "از شاخه‌ی چپ ادامه دهید [pause]"
+  },
+  {
+    "id": "maneuver_fork_right",
+    "category": "maneuver",
+    "text": "از شاخه‌ی راست ادامه دهید",
+    "forSpeech": "از شاخه‌ی راست ادامه دهید [pause]"
+  },
+  {
+    "id": "maneuver_in_prefix",
+    "category": "distance",
+    "text": "در",
+    "forSpeech": "در [pause]"
+  },
+  {
+    "id": "maneuver_now",
+    "category": "distance",
+    "text": "همین حالا،",
+    "forSpeech": "همین حالا [pause]"
+  },
+  {
+    "id": "maneuver_enter_street",
+    "category": "maneuver",
+    "text": "و وارد شوید",
+    "forSpeech": "و وارد [pause]",
+    "hasSlot": "streetName"
+  },
+  {
+    "id": "arrival_generic",
+    "category": "arrival",
+    "text": "به مقصد رسیدید. سفر خوبی داشته باشید.",
+    "forSpeech": "به مقصد رسیدید. سفر خوبی داشته باشید. [pause]"
+  },
+  {
+    "id": "arrival_to",
+    "category": "arrival",
+    "text": "به مقصد رسیدید",
+    "forSpeech": "به مقصد [pause] رسیدید. [pause]",
+    "hasSlot": "destinationName"
+  },
+  {
+    "id": "off_route",
+    "category": "route",
+    "text": "از مسیر خارج شدید. در حال محاسبه‌ی مسیر جدید هستم.",
+    "forSpeech": "از مسیر خارج شدید. در حال محاسبه‌ی مسیر جدید هستم. [pause]"
+  },
+  {
+    "id": "rerouted",
+    "category": "route",
+    "text": "مسیر جدید محاسبه شد. مسیریابی ادامه دارد.",
+    "forSpeech": "مسیر جدید محاسبه شد. مسیریابی ادامه دارد. [pause]"
+  },
+  {
+    "id": "off_route_far",
+    "category": "route",
+    "text": "از مسیر فاصله گرفتید. مسیر جدید",
+    "forSpeech": "از مسیر فاصله گرفتید. مسیر جدید [pause]",
+    "hasSlot": "distance"
+  },
+  {
+    "id": "destination_set",
+    "category": "route",
+    "text": "مقصد انتخاب شد.",
+    "forSpeech": "مقصد انتخاب شد. [pause]"
+  },
+  {
+    "id": "destination_set_to",
+    "category": "route",
+    "text": "مقصد شما تعیین شد.",
+    "forSpeech": "مقصد شما [pause] تعیین شد. [pause]",
+    "hasSlot": "streetName"
+  },
+  {
+    "id": "navigation_stopped",
+    "category": "route",
+    "text": "مسیریابی پایان یافت.",
+    "forSpeech": "مسیریابی پایان یافت. [pause]"
+  },
+  {
+    "id": "gps_lost",
+    "category": "warning",
+    "text": "سیگنال موقعیت‌یاب ضعیف است. لطفاً مسیر را با احتیاط ادامه دهید.",
+    "forSpeech": "سیگنال موقعیت‌یاب ضعیف است. لطفاً مسیر را با احتیاط ادامه دهید. [pause]"
+  },
+  {
+    "id": "speed_warning_generic",
+    "category": "warning",
+    "text": "سرعت شما بیش از حد مجاز است. لطفاً آرام‌تر برانید.",
+    "forSpeech": "سرعت شما بیش از حد مجاز است. لطفاً آرام‌تر برانید. [pause]"
+  },
+  {
+    "id": "camera_ahead",
+    "category": "warning",
+    "text": "دوربین سرعت در",
+    "forSpeech": "دوربین سرعت در [pause]",
+    "hasSlot": "distance"
+  },
+  {
+    "id": "speed_limit_is",
+    "category": "warning",
+    "text": "محدودیت سرعت",
+    "forSpeech": "محدودیت سرعت [pause]",
+    "hasSlot": "speedLimit"
+  },
+  {
+    "id": "light_red_ahead",
+    "category": "lights",
+    "text": "چراغ راهنمایی در جلوتر قرمز است.",
+    "forSpeech": "چراغ راهنمایی در [pause] جلوتر قرمز است. [pause]"
+  },
+  {
+    "id": "light_green_ahead",
+    "category": "lights",
+    "text": "چراغ راهنمایی در جلوتر سبز است، می‌توانید عبور کنید.",
+    "forSpeech": "چراغ راهنمایی در [pause] جلوتر سبز است، می‌توانید عبور کنید. [pause]"
+  },
+  {
+    "id": "light_yellow_ahead",
+    "category": "lights",
+    "text": "چراغ راهنمایی در جلوتر زرد شد. آماده‌ی توقف باشید.",
+    "forSpeech": "چراغ راهنمایی در [pause] جلوتر زرد شد. آماده‌ی توقف باشید. [pause]"
+  },
+  {
+    "id": "light_red_wait",
+    "category": "lights",
+    "text": "چراغ قرمز است. ثانیه مانده.",
+    "forSpeech": "چراغ قرمز است. [pause] ثانیه مانده. [pause]"
+  },
+  {
+    "id": "light_remaining",
+    "category": "lights",
+    "text": "حدود ثانیه مانده تا سبز شود.",
+    "forSpeech": "حدود [pause] ثانیه مانده تا سبز شود. [pause]"
+  },
+  {
+    "id": "green_wave",
+    "category": "lights",
+    "text": "با سرعت کیلومتر بر ساعت، چراغ بعدی سبز است. موج سبز.",
+    "forSpeech": "با سرعت [pause] کیلومتر بر ساعت، [pause] چراغ بعدی سبز است. موج سبز. [pause]"
+  },
+  {
+    "id": "traffic_ahead",
+    "category": "traffic",
+    "text": "در مسیر پیش‌رو ترافیک وجود دارد؛ حدود تأخیر.",
+    "forSpeech": "در مسیر پیش‌رو ترافیک وجود دارد؛ حدود [pause] تأخیر. [pause]"
+  },
+  {
+    "id": "faster_route",
+    "category": "route",
+    "text": "مسیر سریع‌تری پیدا شد که زودتر می‌رساند.",
+    "forSpeech": "مسیر سریع‌تری پیدا شد که [pause] زودتر می‌رساند. [pause]"
+  },
+  {
+    "id": "remaining_summary",
+    "category": "route",
+    "text": "تا مقصد باقی مانده. زمان رسیدن دیگر، ساعت",
+    "forSpeech": "تا مقصد باقی مانده. زمان رسیدن [pause] دیگر، ساعت [pause]"
+  },
+  {
+    "id": "meters_unit",
+    "category": "units",
+    "text": "متر",
+    "forSpeech": "متر [pause]"
+  },
+  {
+    "id": "kilometers_unit",
+    "category": "units",
+    "text": "کیلومتر",
+    "forSpeech": "کیلومتر [pause]"
+  },
+  {
+    "id": "seconds_unit",
+    "category": "units",
+    "text": "ثانیه",
+    "forSpeech": "ثانیه [pause]"
+  },
+  {
+    "id": "minutes_unit",
+    "category": "units",
+    "text": "دقیقه",
+    "forSpeech": "دقیقه [pause]"
+  },
+  {
+    "id": "hours_unit",
+    "category": "units",
+    "text": "ساعت",
+    "forSpeech": "ساعت [pause]"
+  }
+]
