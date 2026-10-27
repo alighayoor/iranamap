@@ -58,6 +58,8 @@ class SettingsActivity : AppCompatActivity() {
         swShowLights = findViewById(R.id.swShowLights)
         swShowCameras = findViewById(R.id.swShowCameras)
         swSpeedLimit = findViewById(R.id.swSpeedLimit)
+        // مسیرهای فعلی منبع قابل اتکای محدودیت سرعت ندارند.
+        swSpeedLimit.isEnabled = false
         rgVerbosity = findViewById(R.id.rgVerbosity)
 
         findViewById<LinearLayout>(R.id.rowVoiceSettings).setOnClickListener {
@@ -110,7 +112,7 @@ class SettingsActivity : AppCompatActivity() {
         sw3d.isChecked = s.is3d
         swShowLights.isChecked = s.showTrafficLights
         swShowCameras.isChecked = s.showCameras
-        swSpeedLimit.isChecked = s.speedLimitAlerts
+        swSpeedLimit.isChecked = false
         tvMapStyle.text = when (s.mapStyle) {
             MapStyleKind.DARK -> getString(R.string.night_mode)
             MapStyleKind.LIGHT -> getString(R.string.day_mode)

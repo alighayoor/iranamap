@@ -4,6 +4,7 @@ import com.iranamap.real.core.CameraKind
 import com.iranamap.real.core.GeoMath
 import com.iranamap.real.core.GeoPoint
 import com.iranamap.real.core.SpeedModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -25,7 +26,8 @@ class CameraRepository(private val api: OverpassApi = ApiClient.overpass) {
 
     private val cache = LinkedHashMap<String, Pair<Long, List<SpeedCamera>>>()
 
-    suspend fun camerasAround(center: GeoPoint, radiusMeters: Int = 4000): List<SpeedCamera> =
+    /** null یعنی خطای ارتباط؛ فهرست خالی یعنی پاسخ معتبرِ بدون دوربین. */
+    suspend fun camerasAround(center: GeoPoint, radiusMeters: Int = 4000): List<SpeedCamera>? =
         withContext(Dispatchers.IO) {
             val key = String.format(Locale.US, "%.2f,%.2f,%d", center.lat, center.lng, radiusMeters / 1000)
             cache[key]?.let { (stamp, list) ->
@@ -41,7 +43,15 @@ class CameraRepository(private val api: OverpassApi = ApiClient.overpass) {
                 );
                 out body 80;
             """.trimIndent()
-            val elements = runCatching { api.query(query).elements }.getOrNull().orEmpty()
+            val elements = try {
+                // نبودن elements یک پاسخ ناقص است، نه فهرست خالیِ معتبر.
+                api.query(query).elements ?: return@withContext null
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                // خطای شبکه «فهرست خالیِ معتبر» نیست و نباید ده دقیقه کش شود.
+                return@withContext null
+            }
             val cameras = elements.mapNotNull { element ->
                 val lat = element.lat ?: return@mapNotNull null
                 val lon = element.lon ?: return@mapNotNull null

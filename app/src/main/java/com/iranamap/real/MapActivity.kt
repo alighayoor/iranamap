@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
+import android.os.SystemClock
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -135,7 +136,7 @@ class MapActivity : AppCompatActivity() {
     // قابل جایگزینی در تست دستگاه برای جلوگیری از وابستگی سناریوها به شبکه.
     private var routeRepo = RouteRepository()
     private val lightRepo = TrafficLightRepository()
-    private val cameraRepo = CameraRepository()
+    private var cameraRepo = CameraRepository() // قابل تزریق در آزمون آفلاین دستگاه
     private val poiRepo = PoiRepository()
     private val mapController by lazy { MapController(this) }
     private val speechEngine: SpeechEngine by lazy { SherpaSpeechEngine(this) }
@@ -175,6 +176,7 @@ class MapActivity : AppCompatActivity() {
     private var lastVoiceId: String? = null
     private var lastLightsCenter: GeoPoint? = null
     private var lastCamerasCenter: GeoPoint? = null
+    private var retryCamerasAtElapsedMs: Long = 0L
 
     // ---------------------------------------------------------------- موقعیت
     private val locationCallback = object : LocationCallback() {
@@ -366,6 +368,13 @@ class MapActivity : AppCompatActivity() {
                     lightCard.hide()
                     lightsJob?.cancel()
                     lastLightsCenter = null
+                }
+                if (!newSettings.showCameras) {
+                    camerasJob?.cancel()
+                    cameras = emptyList()
+                    lastCamerasCenter = null
+                    retryCamerasAtElapsedMs = 0L
+                    runCatching { mapController.showCameras(style, emptyList()) }
                 }
             }
         }
@@ -713,6 +722,11 @@ class MapActivity : AppCompatActivity() {
         planner.reset()
         if (speak) announcer.say(com.iranamap.real.core.VoicePhrases.navigationStopped(), 40)
         stopForegroundService()
+        camerasJob?.cancel()
+        cameras = emptyList()
+        lastCamerasCenter = null
+        retryCamerasAtElapsedMs = 0L
+        runCatching { mapController.showCameras(style, emptyList()) }
         btnStopNav.hide()
         btnStartNav.showIf(activeRoute != null)
         lightCard.hide()
@@ -730,6 +744,7 @@ class MapActivity : AppCompatActivity() {
         cameras = emptyList()
         lastLightsCenter = null
         lastCamerasCenter = null
+        retryCamerasAtElapsedMs = 0L
         stopNavigation(speak = false)
         activeRoute = null
         alternativeRoutes = emptyList()
@@ -756,8 +771,8 @@ class MapActivity : AppCompatActivity() {
         currentLocation = point
         if (location.hasBearing()) currentBearing = location.bearing.toDouble()
         mapController.showUserLocation(style, point)
-        val kmh = (location.speed * 3.6f).toInt().coerceAtLeast(0)
-        tvSpeed.text = PersianText.toPersianDigits(kmh.toString())
+        val kmh = if (location.hasSpeed()) (location.speed * 3.6f).toInt().coerceAtLeast(0) else null
+        tvSpeed.text = kmh?.let { PersianText.toPersianDigits(it.toString()) } ?: "—"
 
         if (!isNavigating) {
             val pending = pendingDestination
@@ -775,7 +790,7 @@ class MapActivity : AppCompatActivity() {
         updateNavigationUi(state)
 
         if (state.arrived) {
-            announcer.announce(planner.onNavigation(navStateFor(state, kmh.toDouble())))
+            announcer.announce(planner.onNavigation(navStateFor(state, kmh?.toDouble() ?: 0.0)))
             stopNavigation(speak = false)
             toast(getString(R.string.arrived))
             return
@@ -786,7 +801,7 @@ class MapActivity : AppCompatActivity() {
             return
         }
 
-        announcer.announce(planner.onNavigation(navStateFor(state, kmh.toDouble())))
+        announcer.announce(planner.onNavigation(navStateFor(state, kmh?.toDouble() ?: 0.0)))
         mapController.followPosition(map, state.snappedPoint, state.bearingDegrees, settings.is3d)
         refreshLights(point, state)
         refreshCameras(point)
@@ -900,16 +915,25 @@ class MapActivity : AppCompatActivity() {
 
     // ---------------------------------------------------------------- دوربین‌ها
     private fun refreshCameras(point: GeoPoint) {
+        if (!settings.showCameras) return
         val last = lastCamerasCenter
-        if (settings.showCameras && (last == null || GeoMath.distanceMeters(last, point) > 1000)) {
-            if (camerasJob?.isActive != true) {
-                lastCamerasCenter = point
-                camerasJob = lifecycleScope.launch {
-                    val fetched = runCatching { cameraRepo.camerasAround(point, 4000) }.getOrDefault(emptyList())
-                    if (fetched.isNotEmpty()) {
-                        cameras = fetched
-                        mapController.showCameras(style, fetched.map { it.point })
-                    }
+        if ((last == null || GeoMath.distanceMeters(last, point) > 1000) &&
+            SystemClock.elapsedRealtime() >= retryCamerasAtElapsedMs && camerasJob?.isActive != true
+        ) {
+            lastCamerasCenter = point
+            camerasJob = lifecycleScope.launch {
+                val fetched = cameraRepo.camerasAround(point, 4000)
+                // پاسخ یک درخواست قدیمی نباید پس از توقف/تغییر تنظیمات اعمال شود.
+                if (!isNavigating || !settings.showCameras) return@launch
+                if (fetched == null) {
+                    cameras = emptyList()
+                    lastCamerasCenter = null
+                    retryCamerasAtElapsedMs = SystemClock.elapsedRealtime() + 30_000L
+                    runCatching { mapController.showCameras(style, emptyList()) }
+                } else {
+                    retryCamerasAtElapsedMs = 0L
+                    cameras = fetched
+                    mapController.showCameras(style, fetched.map { it.point })
                 }
             }
         }
@@ -928,7 +952,8 @@ class MapActivity : AppCompatActivity() {
 
     private fun currentSpeedKmh(): Double {
         val location = lastLocation
-        return if (location != null && location.hasSpeed()) location.speed * 3.6 else 35.0
+        // نبود دادهٔ سرعت نباید به سرعت ساختگی یا هشدار بیش‌سرعت منجر شود.
+        return if (location != null && location.hasSpeed()) location.speed * 3.6 else 0.0
     }
 
     private fun secondsOfDay(): Long {

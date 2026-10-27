@@ -184,7 +184,7 @@
     <string name="show_lights">نمایش چراغ‌های راهنمایی</string>
     <string name="announcements">اعلام‌های صوتی</string>
     <string name="navigation_settings">تنظیمات ناوبری</string>
-    <string name="speed_limit_alerts">هشدار محدودیت سرعت</string>
+    <string name="speed_limit_alerts">هشدار محدودیت سرعت (دادهٔ معتبر مسیر در دسترس نیست)</string>
     <string name="speed_limit_threshold">آستانه‌ی هشدار: %1$s کیلومتر بر ساعت</string>
     <string name="camera_alerts">هشدار دوربین سرعت</string>
     <string name="language">زبان</string>

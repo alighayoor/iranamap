@@ -3,6 +3,7 @@ package com.iranamap.real
 import android.Manifest
 import android.content.Intent
 import android.location.Location
+import android.os.SystemClock
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -11,7 +12,13 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import androidx.recyclerview.widget.RecyclerView
+import com.iranamap.real.core.CameraKind
 import com.iranamap.real.core.GeoPoint
+import com.iranamap.real.data.SpeedCamera
+import com.iranamap.real.data.CameraRepository
+import com.iranamap.real.data.OverpassApi
+import com.iranamap.real.data.OverpassResponse
+import com.iranamap.real.settings.AppSettings
 import com.iranamap.real.data.OsrmApi
 import com.iranamap.real.data.OsrmGeometry
 import com.iranamap.real.data.OsrmLeg
@@ -30,6 +37,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.IOException
+import java.util.concurrent.atomic.AtomicInteger
 
 @RunWith(AndroidJUnit4::class)
 class AppSmokeTest {
@@ -111,6 +120,84 @@ class AppSmokeTest {
                 val traffic = activity.findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.swTraffic)
                 assertFalse(traffic.isEnabled)
                 assertFalse(traffic.isChecked)
+                val limit = activity.findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.swSpeedLimit)
+                assertFalse(limit.isEnabled)
+                assertFalse(limit.isChecked)
+                assertTrue(limit.text.toString().contains("دادهٔ معتبر"))
+            }
+        }
+    }
+
+    @Test
+    fun disabledCameraSettingDoesNotAnnouncePreviouslyLoadedCameras() {
+        ActivityScenario.launch(MapActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                setField(activity, "settings", AppSettings(showCameras = false))
+                setField(activity, "cameras", listOf(SpeedCamera(
+                    id = 42L, point = origin, kind = CameraKind.SPEED,
+                    maxspeedKmh = 50, name = null
+                )))
+                val planner = getField(activity, "planner")!!
+                val spoken = planner.javaClass.getDeclaredField("cameraSpokenAt")
+                    .apply { isAccessible = true }.get(planner) as Map<*, *>
+                assertTrue(spoken.isEmpty())
+                invoke(activity, "refreshCameras", arrayOf(GeoPoint::class.java), origin)
+                assertTrue("A disabled camera setting must suppress stale-camera announcements", spoken.isEmpty())
+            }
+        }
+    }
+
+    @Test
+    fun failedCameraLookupBacksOffInsteadOfPretendingEmptySuccess() {
+        val attempts = AtomicInteger()
+        val failing = object : OverpassApi {
+            override suspend fun query(data: String): OverpassResponse {
+                attempts.incrementAndGet()
+                throw IOException("no network in test")
+            }
+        }
+        ActivityScenario.launch(MapActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                setField(activity, "cameraRepo", CameraRepository(failing))
+                setField(activity, "style", null)
+                setField(activity, "settings", AppSettings(showCameras = true))
+                setField(activity, "isNavigating", true)
+                invoke(activity, "refreshCameras", arrayOf(GeoPoint::class.java), origin)
+            }
+            var waitingToRetry = false
+            for (attempt in 1..50) {
+                scenario.onActivity { activity ->
+                    waitingToRetry = (getField(activity, "retryCamerasAtElapsedMs") as Long) > SystemClock.elapsedRealtime()
+                }
+                if (waitingToRetry) break
+                Thread.sleep(50)
+            }
+            assertTrue("Network failure should schedule a bounded retry", waitingToRetry)
+            scenario.onActivity { activity ->
+                assertNull(getField(activity, "lastCamerasCenter"))
+                invoke(activity, "refreshCameras", arrayOf(GeoPoint::class.java), origin)
+                setField(activity, "isNavigating", false)
+            }
+            Thread.sleep(150)
+            assertEquals("A retry must not immediately repeat the failed request", 1, attempts.get())
+        }
+    }
+
+    @Test
+    fun speedIsUnknownWhenLocationDoesNotSupplyIt() {
+        ActivityScenario.launch(MapActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                setField(activity, "style", null)
+                val location = Location("test").apply {
+                    latitude = origin.lat
+                    longitude = origin.lng
+                    accuracy = 5f
+                }
+                invoke(activity, "handleLocation", arrayOf(Location::class.java), location)
+                assertEquals("—", activity.findViewById<TextView>(R.id.tvSpeed).text.toString())
+                location.speed = 10f // metres per second = 36 km/h
+                invoke(activity, "handleLocation", arrayOf(Location::class.java), location)
+                assertEquals("۳۶", activity.findViewById<TextView>(R.id.tvSpeed).text.toString())
             }
         }
     }
