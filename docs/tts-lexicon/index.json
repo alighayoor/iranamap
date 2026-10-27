@@ -18,7 +18,17 @@
     "name": "شیراز",
     "file": "shiraz_full.json",
     "count": 14312,
-    "note": "تمیز v2: 14,312 نام (16 انگلیسی/800 عدد خالص/38 تکراری حذف، 236 فیکس فاصله/()، اعراب حداقلی)"
+    "note": "تمیز v2: 14,312 نام (16 انگلیسی/800 عدد خالص/38 تکراری حذف، 236 فیکس فاصله/()، اعراب حداقلی)",
+    "anahita_part1": {
+      "raw": "voices/anahita/shiraz/shiraz-part1-anahita-raw.mp3",
+      "cut": "voices/anahita/shiraz/shiraz-part1-anahita-cut.mp3",
+      "duration_raw": 861.07,
+      "duration_cut": 751.31,
+      "saved_seconds": 109.77,
+      "segments": 577,
+      "avg_pause_cut_ms": 190,
+      "standard": "Anahita-Cut v1.0"
+    }
   },
   "tabriz": {
     "name": "تبریز",
