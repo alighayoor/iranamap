@@ -34,6 +34,9 @@ if [ "$status" -eq 0 ]; then
   status=${PIPESTATUS[0]}
 fi
 
+# Optional artifact from the experimental offline snapshot test.
+adb pull /sdcard/Pictures/IranAmapTest/iranamap-offline-probe.png smoke-artifacts/offline-probe.png >/dev/null 2>&1 || true
+
 if [ "$status" -eq 0 ]; then
   # The test runner can uninstall the target app after tests; explicitly reinstall
   # and verify the real app is in the foreground before accepting a screenshot.
