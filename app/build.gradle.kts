@@ -20,6 +20,8 @@ android {
 
     defaultConfig {
         applicationId = appId
+        // نسخهٔ QA کنار نصب قبلی قابل تشخیص باشد، نه هم‌نام با آن.
+        manifestPlaceholders["appLabel"] = if (appId == "com.iranamap.real.qa") "نقشه ایران (آزمایشی)" else "@string/app_name"
         minSdk = 24
         targetSdk = 34
         versionCode = 33

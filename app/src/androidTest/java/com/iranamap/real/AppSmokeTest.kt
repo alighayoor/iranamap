@@ -1,10 +1,12 @@
 package com.iranamap.real
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.location.Location
 import android.os.SystemClock
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.test.core.app.ActivityScenario
@@ -28,6 +30,7 @@ import com.iranamap.real.data.OsrmRoute
 import com.iranamap.real.data.OsrmStep
 import com.iranamap.real.data.RouteRepository
 import com.iranamap.real.ui.CityDownloadActivity
+import com.iranamap.real.ui.FavoritesActivity
 import com.iranamap.real.ui.SearchActivity
 import com.iranamap.real.ui.SettingsActivity
 import org.junit.Assert.assertEquals
@@ -84,6 +87,11 @@ class AppSmokeTest {
         MapActivity::class.java.getDeclaredMethod(name, *types).apply { isAccessible = true }.invoke(activity, *args)
     }
 
+    private fun assertRtlRoot(activity: Activity) {
+        val root = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
+        assertEquals("The Persian screen should be RTL regardless of system language", View.LAYOUT_DIRECTION_RTL, root.layoutDirection)
+    }
+
     private fun chooseDestination(activity: MapActivity) {
         invoke(activity, "setDestination", arrayOf(GeoPoint::class.java, String::class.java, String::class.java), destination, "مقصد آزمایشی", "شیراز")
     }
@@ -94,11 +102,30 @@ class AppSmokeTest {
     }
 
     @Test
+    fun packageLabelDistinguishesTheSideBySideBuild() {
+        val context = ApplicationProvider.getApplicationContext<android.content.Context>()
+        val label = context.packageManager.getApplicationLabel(context.applicationInfo).toString()
+        if (context.packageName == "com.iranamap.real.qa") {
+            assertTrue("The QA app must be recognizable in the launcher", label.contains("آزمایشی"))
+        } else {
+            assertEquals("نقشه ایران", label)
+        }
+    }
+
+    @Test
+    fun favoritesScreenUsesPersianLayoutDirection() {
+        ActivityScenario.launch(FavoritesActivity::class.java).use { scenario ->
+            scenario.onActivity { activity -> assertRtlRoot(activity) }
+        }
+    }
+
+    @Test
     fun searchScreenKeepsTextSentFromMapAndClearsIt() {
         val context = ApplicationProvider.getApplicationContext<android.content.Context>()
         val intent = Intent(context, SearchActivity::class.java).putExtra(SearchActivity.EXTRA_TITLE, "شیراز")
         ActivityScenario.launch<SearchActivity>(intent).use { scenario ->
             scenario.onActivity { activity ->
+                assertRtlRoot(activity)
                 val text = activity.findViewById<EditText>(R.id.etSearch)
                 assertEquals("شیراز", text.text.toString())
                 activity.findViewById<View>(R.id.btnClear).performClick()
@@ -113,6 +140,7 @@ class AppSmokeTest {
     fun settingsDoNotOfferUnverifiedLiveTrafficLightAnnouncements() {
         ActivityScenario.launch(SettingsActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
+                assertRtlRoot(activity)
                 val option = activity.findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.swLights)
                 assertFalse(option.isEnabled)
                 assertFalse(option.isChecked)
@@ -206,6 +234,7 @@ class AppSmokeTest {
     fun offlineCityScreenOpensAndFiltersCities() {
         ActivityScenario.launch(CityDownloadActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
+                assertRtlRoot(activity)
                 activity.findViewById<EditText>(R.id.etCitySearch).setText("شیراز")
                 val list = activity.findViewById<RecyclerView>(R.id.rvCities)
                 assertTrue("City search should contain Shiraz", (list.adapter?.itemCount ?: 0) > 0)
@@ -218,6 +247,7 @@ class AppSmokeTest {
     fun destinationCanBeSetAndClearedBeforeMapOrGpsAreReady() {
         ActivityScenario.launch(MapActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
+                assertRtlRoot(activity)
                 installFakeRouteService(activity)
                 setField(activity, "style", null)
                 setField(activity, "currentLocation", null)
