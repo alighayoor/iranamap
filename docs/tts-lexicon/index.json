@@ -16,8 +16,9 @@
   },
   "shiraz": {
     "name": "شیراز",
-    "file": "shiraz.json",
-    "count": 5
+    "file": "shiraz_prioritized_500.json",
+    "count": 138,
+    "note": "فقط نام‌های واقعی - بدون داده مصنوعی"
   },
   "tabriz": {
     "name": "تبریز",
